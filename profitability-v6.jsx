@@ -3039,6 +3039,42 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
             </div>
           </div>}
 
+          {/* Inherited banner — visually distinct from regular section headers */}
+          {!embedded && (linkedQuotes.length > 0 || linkedPos.length > 0) && (() => {
+            const inheritedItems = PARTS.filter(p => p._source === "quote" || p._source === "po" || p._source === "so");
+            const inheritedCost = inheritedItems.reduce((s, p) => s + p.unitCost * p.qty, 0);
+            return (
+              <div style={{ margin: "10px 14px 0", borderRadius: 10, background: "linear-gradient(135deg, #2a2724 0%, #1a1a18 100%)", boxShadow: "0 4px 16px rgba(26,26,24,0.18), 0 1px 0 rgba(255,255,255,0.04) inset", overflow: "hidden", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <div style={{ padding: "11px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: 7, background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 2px 6px rgba(217,119,6,0.35)" }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", letterSpacing: "0.01em" }}>Inherited from Quote, PO/SO</div>
+                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", marginTop: 2, ...tn }}>
+                      {linkedQuotes.length > 0 && `${linkedQuotes.length} quote${linkedQuotes.length === 1 ? "" : "s"}`}
+                      {linkedQuotes.length > 0 && linkedPos.length > 0 && " · "}
+                      {linkedPos.length > 0 && `${linkedPos.length} PO/SO`}
+                      <span style={{ margin: "0 6px", color: "rgba(255,255,255,0.25)" }}>·</span>
+                      {inheritedItems.length} line item{inheritedItems.length === 1 ? "" : "s"}
+                      <span style={{ margin: "0 6px", color: "rgba(255,255,255,0.25)" }}>·</span>
+                      Cost {$(inheritedCost)}
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                    <button onClick={() => { setInheritSlider("quote"); setInheritSearch(""); setInheritChecked(new Set()); }} className="btn-press" style={{ fontSize: 11, fontWeight: 600, padding: "5px 11px", borderRadius: 6, border: "1px solid rgba(147,197,253,0.4)", background: "rgba(59,130,246,0.15)", color: "#bfdbfe", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4, transition: "background 120ms ease" }}>
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                      Add Quote
+                    </button>
+                    <button onClick={() => { setInheritSlider("po-so"); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null); }} className="btn-press" style={{ fontSize: 11, fontWeight: 600, padding: "5px 11px", borderRadius: 6, border: "1px solid rgba(252,211,77,0.4)", background: "rgba(251,191,36,0.15)", color: "#fde68a", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4, transition: "background 120ms ease" }}>
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                      Add PO/SO
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
 
           <Table style={{ tableLayout: "fixed", width: "100%" }}>
             <colgroup>
@@ -3201,41 +3237,24 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                 const gRev = items.filter(p => p.billable).reduce((s, p) => s + p.unitPrice * p.qty, 0);
                 const gBundles = groupBundles.get(gName) || [];
                 return [
-                  <TableRow key={"g-" + gi} className="group-header-row" hoverBg={false} draggable={!embedded && draggingGroup === gName && gName !== "Inherited"} onDragOver={!embedded ? (e) => { e.preventDefault(); setDragOverItem("group:" + gName); } : undefined} onDrop={!embedded ? () => handleDrop("group:" + gName) : undefined} onDragEnd={!embedded ? () => handleGroupDragEnd(gName) : undefined} style={{ position: "sticky", top: isSticky ? 80 : 36, zIndex: 5, cursor: embedded ? "default" : "pointer", opacity: draggingGroup === gName ? 0.4 : 1, borderTop: dragOverItem === "group:" + gName && dragItem !== "group:" + gName ? "2px solid #3b82f6" : gName === "Inherited" ? "none" : "1px solid #e8e7e2", boxShadow: gName === "Inherited" ? "0 1px 0 rgba(26,26,24,0.12)" : "0 1px 0 #e8e7e2", height: embedded ? 36 : undefined }} onClick={() => toggleGroup(gName)}>
-                    {!embedded && <TableCell className="group-header" style={{ padding: "0 4px 0 6px", verticalAlign: "middle", background: gName === "Inherited" ? "linear-gradient(180deg, #262421 0%, #1a1a18 100%)" : "#fafaf8", animationDelay: `${gi * 40}ms` }} onClick={e => e.stopPropagation()}>
+                  <TableRow key={"g-" + gi} className="group-header-row" hoverBg={false} draggable={!embedded && draggingGroup === gName} onDragOver={!embedded ? (e) => { e.preventDefault(); setDragOverItem("group:" + gName); } : undefined} onDrop={!embedded ? () => handleDrop("group:" + gName) : undefined} onDragEnd={!embedded ? () => handleGroupDragEnd(gName) : undefined} style={{ position: "sticky", top: isSticky ? 80 : 36, zIndex: 5, cursor: embedded ? "default" : "pointer", opacity: draggingGroup === gName ? 0.4 : 1, borderTop: dragOverItem === "group:" + gName && dragItem !== "group:" + gName ? "2px solid #3b82f6" : "1px solid #e8e7e2", boxShadow: "0 1px 0 #e8e7e2", height: embedded ? 36 : undefined, ...(gName === "Inherited" ? { display: "none" } : {}) }} onClick={() => toggleGroup(gName)}>
+                    {!embedded && <TableCell className="group-header" style={{ padding: "0 4px 0 6px", verticalAlign: "middle", background: "#fafaf8", animationDelay: `${gi * 40}ms` }} onClick={e => e.stopPropagation()}>
                       <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                        {gName !== "Inherited" && (
-                          <span className="drag-handle" onMouseDown={(e) => { e.stopPropagation(); handleGroupDragStart(gName); e.currentTarget.closest("tr").draggable = true; }} style={{ cursor: "grab", color: "#d0cfca", display: "flex", alignItems: "center", padding: "2px 0" }}>
-                            <svg width="8" height="14" viewBox="0 0 8 14" fill="currentColor"><circle cx="2" cy="2" r="1.2"/><circle cx="6" cy="2" r="1.2"/><circle cx="2" cy="7" r="1.2"/><circle cx="6" cy="7" r="1.2"/><circle cx="2" cy="12" r="1.2"/><circle cx="6" cy="12" r="1.2"/></svg>
-                          </span>
-                        )}
-                        <input type="checkbox" checked={items.every(p => selected.has(p.id)) && gBundles.every(b => selected.has(b.bundleId))} onChange={(e) => { const n = new Set(selected); if (e.target.checked) { items.forEach(p => n.add(p.id)); gBundles.forEach(b => n.add(b.bundleId)); } else { items.forEach(p => n.delete(p.id)); gBundles.forEach(b => n.delete(b.bundleId)); } setSelected(n); }} style={{ width: 13, height: 13, cursor: "pointer", accentColor: gName === "Inherited" ? "#fff" : "#1a1a18", margin: 0 }} />
+                        <span className="drag-handle" onMouseDown={(e) => { e.stopPropagation(); handleGroupDragStart(gName); e.currentTarget.closest("tr").draggable = true; }} style={{ cursor: "grab", color: "#d0cfca", display: "flex", alignItems: "center", padding: "2px 0" }}>
+                          <svg width="8" height="14" viewBox="0 0 8 14" fill="currentColor"><circle cx="2" cy="2" r="1.2"/><circle cx="6" cy="2" r="1.2"/><circle cx="2" cy="7" r="1.2"/><circle cx="6" cy="7" r="1.2"/><circle cx="2" cy="12" r="1.2"/><circle cx="6" cy="12" r="1.2"/></svg>
+                        </span>
+                        <input type="checkbox" checked={items.every(p => selected.has(p.id)) && gBundles.every(b => selected.has(b.bundleId))} onChange={(e) => { const n = new Set(selected); if (e.target.checked) { items.forEach(p => n.add(p.id)); gBundles.forEach(b => n.add(b.bundleId)); } else { items.forEach(p => n.delete(p.id)); gBundles.forEach(b => n.delete(b.bundleId)); } setSelected(n); }} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18", margin: 0 }} />
                       </div>
                     </TableCell>}
-                    <TableCell colSpan={visibleCols.length + (embedded ? 1 : 2)} style={{ padding: embedded ? "7px 40px" : gName === "Inherited" ? "8px 14px" : "4px 14px 4px 14px", background: gName === "Inherited" ? "linear-gradient(180deg, #262421 0%, #1a1a18 100%)" : "#fafaf8" }}>
+                    <TableCell colSpan={visibleCols.length + (embedded ? 1 : 2)} style={{ padding: embedded ? "7px 40px" : "4px 14px 4px 14px", background: "#fafaf8" }}>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          {gName === "Inherited" && (
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                          )}
-                          <span className="group-title" style={{ fontSize: gName === "Inherited" ? 12 : 12, fontWeight: 700, color: gName === "Inherited" ? "#fff" : "#4a4a46", letterSpacing: gName === "Inherited" ? "0.01em" : "normal" }}>{gName === "Inherited" ? "Inherited from Quote, PO/SO" : gName}</span>
-                          <svg className="group-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke={gName === "Inherited" ? "rgba(255,255,255,0.6)" : "#b0afa9"} strokeWidth="1.5" strokeLinecap="round" style={{ transform: collapsedGroups.has(gName) ? "rotate(-90deg)" : "rotate(0deg)", transition: "transform 150ms ease", flexShrink: 0 }}><path d="M2 3.5l3 3 3-3"/></svg>
+                          <span className="group-title" style={{ fontSize: 12, fontWeight: 700, color: "#4a4a46" }}>{gName}</span>
+                          <svg className="group-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#b0afa9" strokeWidth="1.5" strokeLinecap="round" style={{ transform: collapsedGroups.has(gName) ? "rotate(-90deg)" : "rotate(0deg)", transition: "transform 150ms ease", flexShrink: 0 }}><path d="M2 3.5l3 3 3-3"/></svg>
                         </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 11, color: gName === "Inherited" ? "rgba(255,255,255,0.7)" : "#8c8b86", ...tn, whiteSpace: "nowrap" }}>
-                          <span style={{ fontSize: 10, fontWeight: 600, color: gName === "Inherited" ? "rgba(255,255,255,0.55)" : "#b0afa9" }}>{items.length} items</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 11, color: "#8c8b86", ...tn, whiteSpace: "nowrap" }}>
+                          <span style={{ fontSize: 10, fontWeight: 600, color: "#b0afa9" }}>{items.length} items</span>
                           <span>Cost {$(gCost)}</span>
-                          {gName === "Inherited" && (
-                            <div style={{ display: "inline-flex", alignItems: "center", gap: 6 }} onClick={e => e.stopPropagation()}>
-                              <button onClick={() => { setInheritSlider("quote"); setInheritSearch(""); setInheritChecked(new Set()); }} className="btn-press" style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 6, border: "1px solid #dbeafe", background: "#eff6ff", color: "#1e40af", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                Add Quote
-                              </button>
-                              <button onClick={() => { setInheritSlider("po-so"); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null); }} className="btn-press" style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 6, border: "1px solid #fde68a", background: "#fef3c7", color: "#854d0e", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                Add PO/SO
-                              </button>
-                            </div>
-                          )}
                           {!embedded && <div style={{ position: "relative" }} onClick={e => e.stopPropagation()}>
                             <button className={sectionMenu === gName ? undefined : "row-dots"} onClick={() => setSectionMenu(sectionMenu === gName ? null : gName)} style={{ width: 24, height: 24, padding: 0, borderRadius: 5, border: "none", background: sectionMenu === gName ? "#eae9e4" : "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#b0afa9", fontSize: 15, lineHeight: 1, transition: "background 100ms ease, opacity 120ms ease" }}
                               onMouseEnter={e => { if (sectionMenu !== gName) e.currentTarget.style.background = "#f0eeea"; }}
