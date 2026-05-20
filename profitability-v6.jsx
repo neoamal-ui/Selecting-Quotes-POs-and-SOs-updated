@@ -3428,10 +3428,10 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                     const menuOpen = rowMenu === p.id;
                     const pSerial = String(++_serialCtr).padStart(3, "0");
                     return (
-                      <TableRow key={p.id} draggable={!embedded && !p._locked} onClick={embedded ? () => setViewItem(p) : undefined} onKeyDown={embedded ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setViewItem(p); } } : undefined} tabIndex={embedded ? 0 : undefined} aria-label={embedded ? `View details for ${p.name}` : undefined} onDragStart={!embedded && !p._locked ? () => handleDragStart(p.id) : undefined} onDragOver={!embedded ? (e) => handleDragOver(e, p.id) : undefined} onDrop={!embedded ? () => handleDrop(p.id) : undefined} onDragEnd={!embedded ? () => { setDragItem(null); setDragOverItem(null); } : undefined} data-selected={!embedded && selected.has(p.id) || undefined} style={{ cursor: embedded ? "pointer" : undefined, opacity: dragItem === p.id ? 0.4 : 1, background: p._locked ? "#fafaf8" : undefined, borderTop: dragOverItem === p.id && dragItem !== p.id ? "2px solid #3b82f6" : undefined }}>
+                      <TableRow key={p.id} draggable={!embedded && !p._locked} onClick={embedded ? () => setViewItem(p) : undefined} onKeyDown={embedded ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setViewItem(p); } } : undefined} tabIndex={embedded ? 0 : undefined} aria-label={embedded ? `View details for ${p.name}` : undefined} onDragStart={!embedded && !p._locked ? () => handleDragStart(p.id) : undefined} onDragOver={!embedded ? (e) => handleDragOver(e, p.id) : undefined} onDrop={!embedded ? () => handleDrop(p.id) : undefined} onDragEnd={!embedded ? () => { setDragItem(null); setDragOverItem(null); } : undefined} data-selected={!embedded && selected.has(p.id) || undefined} style={{ cursor: embedded ? "pointer" : undefined, opacity: dragItem === p.id ? 0.4 : 1, borderTop: dragOverItem === p.id && dragItem !== p.id ? "2px solid #3b82f6" : undefined }}>
                         {!embedded && <TableCell style={{ padding: "0 4px 0 6px", textAlign: "center", verticalAlign: "middle" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                            <span className="drag-handle" style={{ cursor: p._locked ? "not-allowed" : "grab", color: "#d0cfca", display: "flex", alignItems: "center", padding: "2px 0", opacity: p._locked ? 0.4 : 1 }} onMouseDown={e => { if (!p._locked) e.currentTarget.closest("tr").draggable = true; }}>
+                            <span className="drag-handle" style={{ cursor: p._locked ? "default" : "grab", color: "#d0cfca", display: "flex", alignItems: "center", padding: "2px 0" }} onMouseDown={e => { if (!p._locked) e.currentTarget.closest("tr").draggable = true; }}>
                               <svg width="8" height="14" viewBox="0 0 8 14" fill="currentColor"><circle cx="2" cy="2" r="1.2"/><circle cx="6" cy="2" r="1.2"/><circle cx="2" cy="7" r="1.2"/><circle cx="6" cy="7" r="1.2"/><circle cx="2" cy="12" r="1.2"/><circle cx="6" cy="12" r="1.2"/></svg>
                             </span>
                             <span className="row-serial" style={{ fontSize: 11, fontWeight: 600, color: "#b0afa9", fontVariantNumeric: "tabular-nums", letterSpacing: "0.02em", flex: 1, textAlign: "center" }}>{pSerial}</span>
@@ -3439,10 +3439,10 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                           </div>
                         </TableCell>}
                         <TableCell style={{ padding: embedded ? "12px 14px 12px 40px" : "12px 14px" }}>
-                          <div style={{ display: "flex", alignItems: "flex-start", gap: 10, opacity: p._locked ? 0.78 : 1 }}>
+                          <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
                             <Thumb type={p.thumb} />
                             <div style={{ minWidth: 0, flex: 1 }}>
-                              <span className="hover-link" onClick={(e) => { e.stopPropagation(); setViewItem(p); }} style={{ fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", cursor: "pointer", display: "block", color: p._locked ? "#4a4a46" : "#1a1a18" }}>{p.name}</span>
+                              <span className="hover-link" onClick={(e) => { e.stopPropagation(); setViewItem(p); }} style={{ fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", cursor: "pointer", display: "block", color: "#1a1a18" }}>{p.name}</span>
                               {!devFlags.hideDescription && p.description && <div style={{ fontSize: 11, color: "#b0afa9", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 320 }}>{p.description}</div>}
                               <div style={{ fontSize: 11, color: "#a3a29c", marginTop: 1, display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
                                 <span style={tn}>{p.id}</span>
