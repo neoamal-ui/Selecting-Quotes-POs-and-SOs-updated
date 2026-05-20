@@ -3433,15 +3433,15 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                                 {p.sku && <><span style={{ color: "#d0cfca" }}>·</span><span style={{ ...tn, fontSize: 10, color: "#b0afa9" }}>{p.sku}</span></>}
                                 {nb && <span style={{ fontSize: 9, fontWeight: 700, padding: "1px 5px", borderRadius: 3, background: "#fef3c7", color: "#92400e" }}>NON-BILLABLE</span>}
                                 {p._source === "quote" && (
-                                  <span style={{ fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 3, background: "#dbeafe", color: "#1e40af", display: "inline-flex", alignItems: "center", gap: 3 }}>
-                                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                                    FROM QUOTE {p._sourceId}
+                                  <span title={p._sourceTitle ? `Inherited from Quote ${p._sourceId} · ${p._sourceTitle}` : `Inherited from Quote ${p._sourceId}`} style={{ fontSize: 10, fontWeight: 600, padding: "2px 7px", borderRadius: 4, background: "#dbeafe", color: "#1e40af", display: "inline-flex", alignItems: "center", gap: 4, letterSpacing: "0.01em" }}>
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                    Inherited from {p._sourceId}
                                   </span>
                                 )}
                                 {(p._source === "po" || p._source === "so") && (
-                                  <span style={{ fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 3, background: p._source === "po" ? "#fef3c7" : "#fee2e2", color: p._source === "po" ? "#854d0e" : "#991b1b", display: "inline-flex", alignItems: "center", gap: 3 }}>
-                                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-                                    FROM {p._source.toUpperCase()} {p._sourceId}
+                                  <span title={p._sourceTitle ? `Inherited from ${p._source.toUpperCase()} ${p._sourceId} · ${p._sourceTitle}` : `Inherited from ${p._source.toUpperCase()} ${p._sourceId}`} style={{ fontSize: 10, fontWeight: 600, padding: "2px 7px", borderRadius: 4, background: p._source === "po" ? "#fef3c7" : "#fee2e2", color: p._source === "po" ? "#854d0e" : "#991b1b", display: "inline-flex", alignItems: "center", gap: 4, letterSpacing: "0.01em" }}>
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                                    Inherited from {p._sourceId}
                                   </span>
                                 )}
                               </div>
