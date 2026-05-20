@@ -3217,6 +3217,8 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                           <svg className="group-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#b0afa9" strokeWidth="1.5" strokeLinecap="round" style={{ transform: collapsedGroups.has(gName) ? "rotate(-90deg)" : "rotate(0deg)", transition: "transform 150ms ease", flexShrink: 0 }}><path d="M2 3.5l3 3 3-3"/></svg>
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 11, color: "#8c8b86", ...tn, whiteSpace: "nowrap" }}>
+                          <span style={{ fontSize: 10, fontWeight: 600, color: "#b0afa9" }}>{items.length} items</span>
+                          <span>Cost {$(gCost)}</span>
                           {gName === "Inherited" && (
                             <div style={{ display: "inline-flex", alignItems: "center", gap: 6 }} onClick={e => e.stopPropagation()}>
                               <button onClick={() => { setInheritSlider("quote"); setInheritSearch(""); setInheritChecked(new Set()); }} className="btn-press" style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 6, border: "1px solid #dbeafe", background: "#eff6ff", color: "#1e40af", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}>
@@ -3229,8 +3231,6 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                               </button>
                             </div>
                           )}
-                          <span style={{ fontSize: 10, fontWeight: 600, color: "#b0afa9" }}>{items.length} items</span>
-                          <span>Cost {$(gCost)}</span>
                           {!embedded && <div style={{ position: "relative" }} onClick={e => e.stopPropagation()}>
                             <button className={sectionMenu === gName ? undefined : "row-dots"} onClick={() => setSectionMenu(sectionMenu === gName ? null : gName)} style={{ width: 24, height: 24, padding: 0, borderRadius: 5, border: "none", background: sectionMenu === gName ? "#eae9e4" : "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#b0afa9", fontSize: 15, lineHeight: 1, transition: "background 100ms ease, opacity 120ms ease" }}
                               onMouseEnter={e => { if (sectionMenu !== gName) e.currentTarget.style.background = "#f0eeea"; }}
