@@ -3031,42 +3031,6 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
             </div>
           </div>}
 
-          {/* Inherited banner — warm light strip above the table, clearly distinct from in-table section headers */}
-          {!embedded && (linkedQuotes.length > 0 || linkedPos.length > 0) && (() => {
-            const inheritedItems = PARTS.filter(p => p._source === "quote" || p._source === "po" || p._source === "so");
-            const inheritedCost = inheritedItems.reduce((s, p) => s + p.unitCost * p.qty, 0);
-            return (
-              <div style={{ margin: "10px 14px 0", borderRadius: 10, background: "linear-gradient(180deg, #fbfaf6 0%, #f5f4f0 100%)", border: "1px solid #e8e7e2", boxShadow: "0 1px 0 rgba(0,0,0,0.02)", overflow: "hidden" }}>
-                <div style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
-                  <div style={{ width: 24, height: 24, borderRadius: 6, background: "#fff", border: "1px solid #e0dfda", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: "#1a1a18", letterSpacing: "0.01em" }}>Inherited from Quote, PO/SO</span>
-                    <span style={{ fontSize: 11, color: "#8c8b86", ...tn }}>
-                      {linkedQuotes.length > 0 && `${linkedQuotes.length} quote${linkedQuotes.length === 1 ? "" : "s"}`}
-                      {linkedQuotes.length > 0 && linkedPos.length > 0 && " · "}
-                      {linkedPos.length > 0 && `${linkedPos.length} PO/SO`}
-                      <span style={{ margin: "0 6px", color: "#d0cfca" }}>·</span>
-                      {inheritedItems.length} line item{inheritedItems.length === 1 ? "" : "s"}
-                      <span style={{ margin: "0 6px", color: "#d0cfca" }}>·</span>
-                      Cost {$(inheritedCost)}
-                    </span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-                    <button onClick={() => { setInheritSlider("quote"); setInheritSearch(""); setInheritChecked(new Set()); }} className="btn-press" style={{ fontSize: 11, fontWeight: 600, padding: "5px 11px", borderRadius: 6, border: "1px solid #dbeafe", background: "#eff6ff", color: "#1e40af", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                      Add Quote
-                    </button>
-                    <button onClick={() => { setInheritSlider("po-so"); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null); }} className="btn-press" style={{ fontSize: 11, fontWeight: 600, padding: "5px 11px", borderRadius: 6, border: "1px solid #fde68a", background: "#fef3c7", color: "#854d0e", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                      Add PO/SO
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
 
           <Table style={{ tableLayout: "fixed", width: "100%" }}>
             <colgroup>
