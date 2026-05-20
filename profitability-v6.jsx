@@ -3276,7 +3276,23 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                     <TableCell colSpan={visibleCols.length + (embedded ? 1 : 2)} style={{ padding: embedded ? "7px 40px" : "4px 14px 4px 14px", background: "#fafaf8" }}>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <span className="group-title" style={{ fontSize: 12, fontWeight: 700, color: "#4a4a46" }}>{gName}</span>
+                          {(() => {
+                            const inheritedKind = gName.startsWith("Quote ") ? "quote" : gName.startsWith("PO ") ? "po" : gName.startsWith("SO ") ? "so" : null;
+                            if (inheritedKind) {
+                              const badgeBg = inheritedKind === "quote" ? "#dbeafe" : inheritedKind === "po" ? "#fef3c7" : "#fee2e2";
+                              const badgeFg = inheritedKind === "quote" ? "#1e40af" : inheritedKind === "po" ? "#854d0e" : "#991b1b";
+                              return (
+                                <>
+                                  <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 7px", borderRadius: 4, background: badgeBg, color: badgeFg, letterSpacing: "0.04em", textTransform: "uppercase", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                    Inherited · {inheritedKind === "quote" ? "Quote" : inheritedKind.toUpperCase()}
+                                  </span>
+                                  <span className="group-title" style={{ fontSize: 12, fontWeight: 700, color: "#1a1a18" }}>{gName}</span>
+                                </>
+                              );
+                            }
+                            return <span className="group-title" style={{ fontSize: 12, fontWeight: 700, color: "#4a4a46" }}>{gName}</span>;
+                          })()}
                           <svg className="group-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#b0afa9" strokeWidth="1.5" strokeLinecap="round" style={{ transform: collapsedGroups.has(gName) ? "rotate(-90deg)" : "rotate(0deg)", transition: "transform 150ms ease", flexShrink: 0 }}><path d="M2 3.5l3 3 3-3"/></svg>
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 11, color: "#8c8b86", ...tn, whiteSpace: "nowrap" }}>
@@ -4138,10 +4154,11 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
           setParts(prev => {
             const next = [...prev];
             toAdd.forEach(q => {
+              const groupName = `Quote ${q.id} — ${q.title}`;
               q.items.forEach((it, idx) => {
                 next.push({
                   id: `${q.id}-LI${idx + 1}`,
-                  name: it.name, type: it.type, group: it.group,
+                  name: it.name, type: it.type, group: groupName,
                   qty: it.qty, unit: it.unit, unitCost: it.unitCost, unitPrice: it.unitPrice,
                   billable: it.billable, description: it.description, sku: it.sku,
                   notes: null, thumb: it.type === "MAT" ? "shingle" : it.type === "EQ" ? "dumpster" : "permit",
@@ -4263,10 +4280,11 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
           setParts(prev => {
             const next = [...prev];
             toAdd.forEach(po => {
+              const groupName = `${po.type} ${po.id} — ${po.title}`;
               po.items.forEach((it, idx) => {
                 next.push({
                   id: `${po.id}-LI${idx + 1}`,
-                  name: it.name, type: it.type, group: it.group,
+                  name: it.name, type: it.type, group: groupName,
                   qty: it.qty, unit: it.unit, unitCost: it.unitCost, unitPrice: it.unitPrice,
                   billable: it.billable, description: it.description, sku: it.sku,
                   notes: null, thumb: it.type === "MAT" ? "shingle" : it.type === "EQ" ? "dumpster" : "truck",
