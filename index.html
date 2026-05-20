@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prelude Details</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { overflow: hidden; height: 100%; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        background: #f5f4f0;
+        overflow: hidden;
+        height: 100%;
+      }
+      /* Overlay scrollbar — no gutter, show only on scroll */
+      #root ::-webkit-scrollbar { width: 8px; background: transparent; }
+      #root ::-webkit-scrollbar-track { background: transparent; }
+      #root ::-webkit-scrollbar-thumb { background: transparent; border-radius: 4px; transition: background 0.3s; }
+      body.is-scrolling #root ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.18); }
+      body.is-scrolling #root ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.28); }
+      /* Firefox */
+      #root * { scrollbar-width: thin; scrollbar-color: transparent transparent; }
+      body.is-scrolling #root * { scrollbar-color: rgba(0,0,0,0.18) transparent; }
+      button, input, select, textarea, option {
+        font-family: inherit;
+        font-size: inherit;
+        line-height: inherit;
+        color: inherit;
+      }
+      button { cursor: pointer; }
+      .dropdown-item:hover { background: #fafaf8 !important; }
+      .col-header-cell:hover .col-header-dots { opacity: 1 !important; }
+      .col-header-dots:hover { background: #f0eeea !important; }
+      table { border-collapse: collapse; border-spacing: 0; }
+      .picker-scroll { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.15) transparent; }
+      .picker-scroll::-webkit-scrollbar { width: 6px; }
+      .picker-scroll::-webkit-scrollbar-track { background: transparent; }
+      .picker-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
+      .picker-scroll::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
+      /* Hide number input spinners for cleaner look */
+      input[type="number"]::-webkit-outer-spin-button,
+      input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+      input[type="number"] { -moz-appearance: textfield; }
+
+      /* View More button */
+      .view-more-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 6px;
+        border: 1px solid #e0dfda;
+        background: #fff;
+        color: #4a4a46;
+        white-space: nowrap;
+        transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1),
+                    background 160ms ease,
+                    border-color 160ms ease,
+                    box-shadow 160ms ease;
+      }
+      .view-more-btn:hover {
+        background: #fafaf8;
+        border-color: #d0cfca;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      }
+      .view-more-btn:active {
+        transform: scale(0.97);
+      }
+      .view-more-btn .arrow {
+        display: inline-block;
+        transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .view-more-btn:hover .arrow {
+        transform: translateX(2px);
+      }
+      .view-more-btn.back:hover .arrow {
+        transform: translateX(-2px);
+      }
+
+      /* Page transitions */
+      @keyframes fadeSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes fadeSlideOut {
+        from {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        to {
+          opacity: 0;
+          transform: translateY(-4px);
+        }
+      }
+      .page-enter {
+        animation: fadeSlideIn 280ms cubic-bezier(0.23, 1, 0.32, 1) both;
+      }
+
+      /* Stagger for analytics cards */
+      .analytics-card {
+        animation: fadeSlideIn 320ms cubic-bezier(0.23, 1, 0.32, 1) both;
+      }
+      .analytics-card:nth-child(1) { animation-delay: 0ms; }
+      .analytics-card:nth-child(2) { animation-delay: 50ms; }
+      .analytics-card:nth-child(3) { animation-delay: 100ms; }
+      .analytics-card:nth-child(4) { animation-delay: 150ms; }
+      .analytics-full {
+        animation: fadeSlideIn 320ms cubic-bezier(0.23, 1, 0.32, 1) both;
+        animation-delay: 200ms;
+      }
+
+      /* KPI tooltip — transition-driven enter/exit */
+      .kpi-tooltip {
+        position: absolute;
+        bottom: -6px;
+        left: 0;
+        transform: translateY(100%) scale(0.97);
+        transform-origin: top left;
+        z-index: 30;
+        background: #fff;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 10px;
+        padding: 10px 14px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+        border: 1px solid rgba(232, 231, 226, 0.8);
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 150ms cubic-bezier(0.23, 1, 0.32, 1),
+                    transform 150ms cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .kpi-tooltip[data-visible] {
+        opacity: 1;
+        transform: translateY(100%) scale(1);
+        pointer-events: auto;
+      }
+
+      /* KPI card entrance — staggered slide-up */
+      .kpi-card {
+        animation: fadeSlideIn 350ms cubic-bezier(0.23, 1, 0.32, 1) both;
+      }
+      .kpi-card:nth-child(1) { animation-delay: 60ms; }
+      .kpi-card:nth-child(2) { animation-delay: 120ms; }
+      .kpi-card:nth-child(3) { animation-delay: 180ms; }
+
+      /* Operator badges (−, =) between KPI cards */
+      @keyframes operatorFadeIn {
+        from { opacity: 0; transform: translateY(-50%) scale(0.8); }
+        to   { opacity: 1; transform: translateY(-50%) scale(1); }
+      }
+      .kpi-operator {
+        animation: operatorFadeIn 250ms cubic-bezier(0.23, 1, 0.32, 1) both;
+      }
+      .kpi-operator.op-1 { animation-delay: 160ms; }
+      .kpi-operator.op-2 { animation-delay: 240ms; }
+
+      /* Pill badges pop in */
+      @keyframes pillPop {
+        from { opacity: 0; transform: scale(0.85); }
+        to   { opacity: 1; transform: scale(1); }
+      }
+      .pill-enter {
+        animation: pillPop 200ms cubic-bezier(0.23, 1, 0.32, 1) both;
+        animation-delay: 500ms;
+      }
+
+      /* Cost split bar reveal — fills left to right */
+      @keyframes barReveal {
+        from { clip-path: inset(0 100% 0 0); }
+        to   { clip-path: inset(0 0 0 0); }
+      }
+      .cost-split-bar {
+        animation: barReveal 600ms cubic-bezier(0.23, 1, 0.32, 1) both;
+        animation-delay: 350ms;
+      }
+
+      /* Cost split inner items fade in (strip itself is always visible) */
+      @keyframes contentFadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+      }
+      .cost-split-item {
+        animation: contentFadeIn 300ms cubic-bezier(0.23, 1, 0.32, 1) both;
+        animation-delay: 350ms;
+      }
+
+      /* Margin % in header — scale in */
+      @keyframes marginReveal {
+        from { opacity: 0; transform: scale(0.92); }
+        to   { opacity: 1; transform: scale(1); }
+      }
+      .margin-hero {
+        transform-origin: right center;
+        animation: marginReveal 400ms cubic-bezier(0.23, 1, 0.32, 1) both;
+        animation-delay: 350ms;
+      }
+
+      /* Header entrance */
+      .header-enter {
+        animation: fadeSlideIn 300ms cubic-bezier(0.23, 1, 0.32, 1) both;
+        animation-delay: 0ms;
+      }
+
+      /* Reduced motion */
+      /* Scope notes expand/collapse — grid trick for height: auto animation */
+      .scope-notes-wrap {
+        display: grid;
+        grid-template-rows: 0fr;
+        opacity: 0;
+        transition: grid-template-rows 220ms cubic-bezier(0.23, 1, 0.32, 1),
+                    opacity 180ms ease-out;
+      }
+      .scope-notes-wrap[data-open] {
+        grid-template-rows: 1fr;
+        opacity: 1;
+      }
+      .scope-notes-wrap > div {
+        overflow: hidden;
+      }
+
+      /* Notes row border fades with content */
+      .notes-row {
+        border-bottom-color: transparent !important;
+        transition: border-bottom-color 200ms ease-out;
+      }
+      .notes-row[data-open] {
+        border-bottom-color: #e8e7e2 !important;
+      }
+
+      /* Selection bar — children stagger in from left */
+      @keyframes slideInFromLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      .selection-bar > * {
+        animation: slideInFromLeft 200ms cubic-bezier(0.23, 1, 0.32, 1) both;
+      }
+      .selection-bar > *:nth-child(1) { animation-delay: 0ms; }
+      .selection-bar > *:nth-child(2) { animation-delay: 25ms; }
+      .selection-bar > *:nth-child(3) { animation-delay: 50ms; }
+      .selection-bar > *:nth-child(4) { animation-delay: 75ms; }
+      .selection-bar > *:nth-child(5) { animation-delay: 100ms; }
+      .selection-bar > *:nth-child(6) { animation-delay: 125ms; }
+      .selection-bar > *:nth-child(7) { animation-delay: 150ms; }
+      .selection-bar > *:nth-child(8) { animation-delay: 150ms; }
+      .selection-bar > *:nth-child(9) { animation-delay: 150ms; }
+
+      /* Group header subtle entrance on first load */
+      .group-header {
+        animation: fadeSlideIn 250ms cubic-bezier(0.23, 1, 0.32, 1) both;
+      }
+
+      /* Catalog sidesheet */
+      @keyframes sidesheetIn {
+        from { transform: translateX(100%); }
+        to   { transform: translateX(0); }
+      }
+      @keyframes sidesheetOut {
+        from { transform: translateX(0); opacity: 1; }
+        to   { transform: translateX(100%); opacity: 0; }
+      }
+      @keyframes overlayIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+      }
+      @keyframes overlayOut {
+        from { opacity: 1; }
+        to   { opacity: 0; }
+      }
+      @keyframes pulse-ring {
+        0%, 100% { opacity: 0.4; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.3); }
+      }
+      .sidesheet-enter {
+        animation: sidesheetIn 280ms cubic-bezier(0.23, 1, 0.32, 1) both;
+      }
+      .sidesheet-exit {
+        animation: sidesheetOut 200ms cubic-bezier(0.23, 1, 0.32, 1) both;
+      }
+      .overlay-enter {
+        animation: overlayIn 200ms ease both;
+      }
+      .overlay-exit {
+        animation: overlayOut 200ms ease both;
+      }
+      .deposit-option:hover {
+        background: #f5f4f0 !important;
+      }
+      .deposit-editable:hover {
+        border-bottom-color: #d1d5db !important;
+      }
+      .catalog-card {
+        animation: fadeSlideIn 200ms cubic-bezier(0.23, 1, 0.32, 1) both;
+      }
+      .catalog-chip {
+        transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+      }
+      .catalog-chip:hover {
+        background: #fafaf8;
+        border-color: #d0cfca;
+      }
+
+      /* Picker row hover — CSS-driven for interruptibility */
+      .picker-row {
+        transition: background 80ms ease-out;
+      }
+      .picker-row:hover {
+        background: rgba(249,249,247,0.7);
+      }
+      .picker-row[data-active="true"] {
+        background: #f5f4f0;
+      }
+      .picker-item-link:hover {
+        color: #3b82f6 !important;
+        text-decoration: underline;
+      }
+
+      /* Detail pane enter — slides from right, not from bottom */
+      @keyframes detailPaneIn {
+        from {
+          opacity: 0;
+          transform: translateX(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      .detail-pane-enter {
+        animation: detailPaneIn 180ms cubic-bezier(0.23, 1, 0.32, 1) both;
+      }
+
+      /* ─── Focus indicators ─── */
+      :focus { outline: none; }
+      :focus-visible {
+        outline: 2px solid #262626;
+        outline-offset: 2px;
+        border-radius: 4px;
+      }
+      input:focus-visible, textarea:focus-visible, select:focus-visible {
+        outline: none;
+        border-color: #262626 !important;
+        box-shadow: 0 0 0 3px rgba(38,38,38,0.08);
+      }
+
+      /* Pressable buttons — active feedback */
+      .btn-press {
+        transition: transform 100ms ease-out, background 120ms ease-out, border-color 120ms ease-out, color 120ms ease-out;
+      }
+      .btn-press:active {
+        transform: scale(0.97);
+      }
+
+      /* ─── Hover classes (replace inline onMouseEnter) ─── */
+      @media (hover: hover) and (pointer: fine) {
+        /* bg → #f0eeea (warm hover for table rows, menu items) */
+        .hover-warm { transition: background 80ms ease-out; }
+        .hover-warm:hover { background: #f0eeea; }
+
+        /* bg → #f9fafb (cool hover for list items) */
+        .hover-row { transition: background 80ms ease-out; }
+        .hover-row:hover { background: #f9fafb; }
+
+        /* bg → #fafaf8 (subtle hover for cards, buttons) */
+        .hover-subtle { transition: background 80ms ease-out; }
+        .hover-subtle:hover { background: #fafaf8; }
+
+        /* icon button: muted → visible on hover */
+        .hover-icon { transition: background 80ms ease-out, color 80ms ease-out; }
+        .hover-icon:hover { background: #f0eeea; color: #6b6a65; }
+
+        /* border lift on hover (cards, outlined elements) */
+        .hover-lift { transition: border-color 120ms cubic-bezier(0.23,1,0.32,1), box-shadow 120ms cubic-bezier(0.23,1,0.32,1), transform 120ms cubic-bezier(0.23,1,0.32,1); }
+        .hover-lift:hover { border-color: #c5c4bf; background: #fafaf8; }
+
+        /* highlight card lift */
+        .hover-card { transition: transform 150ms cubic-bezier(0.23,1,0.32,1), box-shadow 150ms cubic-bezier(0.23,1,0.32,1); }
+        .hover-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+
+        /* chip hover: border + text darken */
+        .hover-chip { transition: border-color 120ms ease-out, color 120ms ease-out; }
+        .hover-chip:hover { border-color: #d0cfca; color: #4a4a46; }
+
+        /* dark button hover → slightly lighter */
+        .hover-dark { transition: background 120ms ease-out; }
+        .hover-dark:hover { background: #2a2a28; }
+
+        /* danger hover (red bg tint) */
+        .hover-danger { transition: background 80ms ease-out, color 80ms ease-out; }
+        .hover-danger:hover { background: rgba(220,38,38,0.06); color: #dc2626; }
+
+        /* danger border hover */
+        .hover-danger-border { transition: border-color 120ms ease-out, color 120ms ease-out; }
+        .hover-danger-border:hover { border-color: #dc2626; color: #dc2626; }
+
+        /* link hover (blue + underline) */
+        .hover-link { transition: color 120ms ease-out; }
+        .hover-link:hover { color: #2563eb; text-decoration: underline; }
+
+        /* delete row hover (red bg) */
+        .hover-delete { transition: background 80ms ease-out; }
+        .hover-delete:hover { background: #fef2f2; }
+      }
+
+      /* Qty stepper button hover + active state */
+      .qty-btn {
+        transition: background 80ms ease-out, transform 80ms ease-out;
+      }
+      @media (hover: hover) and (pointer: fine) {
+        .qty-btn:hover {
+          background: #f5f4f0;
+        }
+      }
+      .qty-btn:active {
+        transform: scale(0.92);
+        background: #eae9e4 !important;
+      }
+
+      /* Dropdown menu enter — scale from origin, not slide */
+      @keyframes dropdownIn {
+        from {
+          opacity: 0;
+          transform: scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      .dropdown-enter {
+        animation: dropdownIn 100ms cubic-bezier(0.23, 1, 0.32, 1) both;
+        transform-origin: top right;
+      }
+
+      /* Drill-down dropdown — slide content in/out */
+      @keyframes drillIn {
+        from { opacity: 0; transform: translateX(12px); }
+        to   { opacity: 1; transform: translateX(0); }
+      }
+      @keyframes drillOut {
+        from { opacity: 0; transform: translateX(-12px); }
+        to   { opacity: 1; transform: translateX(0); }
+      }
+      .drill-in {
+        animation: drillIn 160ms cubic-bezier(0.23, 1, 0.32, 1) both;
+      }
+      .drill-out {
+        animation: drillOut 160ms cubic-bezier(0.23, 1, 0.32, 1) both;
+      }
+
+      /* Tab content entrance */
+      @keyframes tabContentIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .tab-content-enter {
+        animation: tabContentIn 180ms cubic-bezier(0.23, 1, 0.32, 1) both;
+      }
+
+      /* Bundle line-item picker — slides in from right like a sub-page */
+      @keyframes bundlePickerIn {
+        from {
+          opacity: 0;
+          transform: translateX(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      .bundle-picker-enter {
+        animation: bundlePickerIn 200ms cubic-bezier(0.23, 1, 0.32, 1) both;
+      }
+      .bundle-picker-enter .picker-row {
+        opacity: 0;
+        animation: fadeSlideIn 220ms cubic-bezier(0.23, 1, 0.32, 1) both;
+      }
+      .bundle-picker-enter .picker-row:nth-child(1) { animation-delay: 40ms; }
+      .bundle-picker-enter .picker-row:nth-child(2) { animation-delay: 70ms; }
+      .bundle-picker-enter .picker-row:nth-child(3) { animation-delay: 100ms; }
+      .bundle-picker-enter .picker-row:nth-child(4) { animation-delay: 130ms; }
+      .bundle-picker-enter .picker-row:nth-child(5) { animation-delay: 160ms; }
+      .bundle-picker-enter .picker-row:nth-child(6) { animation-delay: 190ms; }
+      .bundle-picker-enter .picker-row:nth-child(7) { animation-delay: 220ms; }
+      .bundle-picker-enter .picker-row:nth-child(8) { animation-delay: 250ms; }
+
+      /* Drag handle + row dots — visible only on row hover */
+      .drag-handle, .row-dots {
+        opacity: 0;
+        transition: opacity 120ms ease;
+      }
+      tr:hover > td .drag-handle,
+      tr:hover > td .row-dots {
+        opacity: 1;
+      }
+
+      /* Serial number / checkbox toggle — CSS-driven, matches drag handle pattern */
+      .row-serial {
+        display: inline-block;
+        transition: opacity 120ms ease;
+      }
+      .row-checkbox {
+        display: none;
+      }
+      tr:hover .row-serial,
+      tr[data-selected] .row-serial {
+        display: none;
+      }
+      tr:hover .row-checkbox,
+      tr[data-selected] .row-checkbox {
+        display: inline-flex;
+      }
+
+      /* Rework view — Asana-style less-boxy variant
+         CSS overrides inline styles with !important; targets only .rework-scope.
+         Goal: flatten borders, lift section headers to plain text, soften the chrome. */
+
+      /* Remove left/right borders on the outer pane, hide scrollbar gap */
+      .rework-scope {
+        border-left-color: transparent !important;
+        border-right-color: transparent !important;
+        box-shadow: none !important;
+      }
+      .rework-scope > div:last-of-type {
+        scrollbar-width: none !important;
+      }
+      .rework-scope > div:last-of-type::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* Toolbar — no divider under search row */
+      .rework-scope .table-toolbar {
+        border-bottom: 1px solid transparent !important;
+        background: transparent !important;
+      }
+
+      /* Column header row — solid fill (applied to cells for reliable
+         rendering under sticky positioning) + soft bottom divider only. */
+      .rework-scope thead tr {
+        box-shadow: 0 1px 0 #eae9e4 !important;
+        border-bottom: none !important;
+      }
+      .rework-scope thead th {
+        color: #b0afa9 !important;
+        background: #fff !important;
+        opacity: 1 !important;
+        box-shadow: none !important;
+      }
+
+      /* Body rows — kill the old hard stroke, draw a soft full-width hairline
+         beneath every cell instead (via inset box-shadow so it paints under
+         `border-collapse: separate`). */
+      .rework-scope tbody tr {
+        border-bottom: 1px solid transparent !important;
+      }
+      .rework-scope tbody td {
+        box-shadow: inset 0 -1px 0 #f0eeea !important;
+      }
+
+      /* Group/section header rows — plain text with breathing room.
+         No fills, no borders on the row itself; the surrounding rows carry
+         their own hairlines. */
+      .rework-scope tr.group-header-row {
+        position: static !important;
+        box-shadow: none !important;
+        border-top: none !important;
+        background: transparent !important;
+      }
+      .rework-scope tr.group-header-row td {
+        background: #fafaf8 !important;
+        padding-top: 2px !important;
+        padding-bottom: 2px !important;
+        box-shadow: inset 0 -1px 0 #eae9e4 !important;
+      }
+
+      /* Section title: chevron after title, compact. */
+      .rework-scope tr.group-header-row .group-title {
+        order: 1;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        color: #1a1a18 !important;
+        letter-spacing: -0.005em !important;
+      }
+      .rework-scope tr.group-header-row .group-chevron {
+        order: 2;
+        width: 10px !important;
+        height: 10px !important;
+        stroke: #6b6a65 !important;
+      }
+
+      /* Bottom totals box — drop borders and fill */
+      .rework-scope .table-totals-box {
+        border-top: 1px solid #e8e7e2 !important;
+        border-bottom: 1px solid transparent !important;
+        background: #f9f8f6 !important;
+        padding-top: 18px !important;
+      }
+
+      /* Side sheet overlay — subtle blur */
+      .sidesheet-overlay {
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+      }
+
+      /* ─── Shell responsive breakpoints ─── */
+      /* Below 1200px: collapse left pane */
+      @media (max-width: 1200px) {
+        .shell-left {
+          width: 0 !important;
+          min-width: 0 !important;
+          border-right: none !important;
+          overflow: hidden !important;
+        }
+        .shell-left-toggle {
+          left: 8px !important;
+        }
+      }
+      /* Below 900px: collapse right pane to icon bar only */
+      @media (max-width: 900px) {
+        .shell-right {
+          width: 46px !important;
+          min-width: 46px !important;
+        }
+        .shell-right > div:first-child {
+          display: none !important;
+        }
+      }
+      /* Below 640px: hide right pane entirely */
+      @media (max-width: 640px) {
+        .shell-right {
+          width: 0 !important;
+          min-width: 0 !important;
+          overflow: hidden !important;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .detail-pane-enter,
+        .dropdown-enter,
+        .btn-press:active,
+        .qty-btn:active,
+        .page-enter,
+        .analytics-card,
+        .analytics-full,
+        .kpi-card,
+        .kpi-operator,
+        .pill-enter,
+        .cost-split-bar,
+        .cost-split-item,
+        .margin-hero,
+        .header-enter,
+        .selection-bar > *,
+        .group-header,
+        .catalog-card,
+        .sidesheet-enter,
+        .sidesheet-exit,
+        .overlay-enter,
+        .overlay-exit,
+        .bundle-picker-enter,
+        .bundle-picker-enter .picker-row {
+          animation: none;
+          opacity: 1;
+          transform: none;
+          clip-path: none;
+        }
+        .kpi-operator {
+          transform: translateY(-50%);
+        }
+        .kpi-tooltip {
+          transition: none;
+          transform: translateY(100%);
+        }
+        .kpi-tooltip[data-visible] {
+          transform: translateY(100%);
+        }
+        .scope-notes-wrap {
+          transition: none;
+        }
+        .notes-row {
+          transition: none;
+        }
+        .view-more-btn:active { transform: none; }
+        .view-more-btn:hover .arrow { transform: none; }
+        .quote-page-enter { animation: none !important; }
+        .floating-bar { animation: none !important; }
+        .hover-card:hover { transform: none; }
+        .hover-lift:hover { transform: none; }
+      }
+
+      /* ─── Quote page transition ─── */
+      @keyframes quotePageIn {
+        from {
+          opacity: 0;
+          transform: translateY(4px) scale(0.998);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      .quote-page-enter {
+        animation: quotePageIn 220ms cubic-bezier(0.23, 1, 0.32, 1) both;
+      }
+
+      /* Floating action bar — slides up from below */
+      @keyframes floatBarIn {
+        from {
+          opacity: 0;
+          transform: translateX(-50%) translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0);
+        }
+      }
+      .floating-bar {
+        animation: floatBarIn 280ms cubic-bezier(0.23, 1, 0.32, 1) both;
+        animation-delay: 180ms;
+      }
+
+      /* Dropdown from floating bar — opens upward */
+      .dropdown-enter-up {
+        animation: dropdownIn 120ms cubic-bezier(0.23, 1, 0.32, 1) both;
+        transform-origin: bottom left;
+      }
+
+      /* Quote page section accordion — grid height trick */
+      .qp-section-wrap {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 200ms cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .qp-section-wrap[data-open="true"] {
+        grid-template-rows: 1fr;
+      }
+      .qp-section-wrap > div {
+        overflow: hidden;
+      }
+
+      /* Quote form/preview header bar */
+      .qp-header {
+        transition: background 120ms ease;
+      }
+
+      /* Hover rows in dropdown menus */
+      @media (hover: hover) and (pointer: fine) {
+        .dropdown-item:hover {
+          background: #f5f4f0;
+        }
+        .btn-ghost:hover {
+          background: #f5f4f0;
+        }
+      }
+
+      /* Quote preview scroll fade at top */
+      .preview-scroll {
+        mask-image: linear-gradient(to bottom, transparent 0px, black 16px, black calc(100% - 16px), transparent 100%);
+        -webkit-mask-image: linear-gradient(to bottom, transparent 0px, black 16px, black calc(100% - 16px), transparent 100%);
+      }
+
+      /* Editable hotspot — dashed border on hover (Layout 3/4) */
+      .edit-hotspot {
+        border: 0.5px dashed transparent;
+        border-radius: 6px;
+        transition: border-color 120ms ease, background 120ms ease;
+        cursor: pointer;
+      }
+      @media (hover: hover) and (pointer: fine) {
+        .edit-hotspot:hover {
+          border-color: #d0cfca;
+          background: rgba(245, 244, 240, 0.5);
+        }
+      }
+      .edit-hotspot:focus-visible {
+        border-color: #262626;
+        outline: none;
+      }
+
+      /* Settings drawer overlay + panel (Layout 4) */
+      .settings-backdrop {
+        animation: overlayIn 200ms ease both;
+      }
+      @keyframes settingsDrawerIn {
+        from { transform: translateX(100%); }
+        to   { transform: translateX(0); }
+      }
+      .settings-drawer-enter {
+        animation: settingsDrawerIn 280ms cubic-bezier(0.23, 1, 0.32, 1) both;
+      }
+
+      /* Dev layout pill */
+      .dev-pill {
+        transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+      }
+      @media (hover: hover) and (pointer: fine) {
+        .dev-pill:hover {
+          background: #f5f3ff;
+          border-color: #c4b5fd;
+          color: #7c3aed;
+        }
+      }
+
+      /* Inline edit field transition */
+      .inline-edit-field {
+        animation: fadeSlideIn 120ms cubic-bezier(0.23, 1, 0.32, 1) both;
+      }
+
+      /* Locked quote amber banner */
+      .locked-banner {
+        animation: fadeSlideIn 200ms cubic-bezier(0.23, 1, 0.32, 1) both;
+      }
+
+      /* Line item row hover for drag/delete reveal */
+      .li-row-actions {
+        opacity: 0;
+        transition: opacity 80ms ease;
+      }
+      @media (hover: hover) and (pointer: fine) {
+        .li-row:hover .li-row-actions {
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/main.jsx"></script>
+    <script>
+      (function(){
+        var t;
+        // Listen for scroll on any child (center pane handles its own scroll)
+        document.getElementById('root').addEventListener('scroll', function(){
+          document.body.classList.add('is-scrolling');
+          clearTimeout(t);
+          t = setTimeout(function(){ document.body.classList.remove('is-scrolling'); }, 800);
+        }, {passive:true, capture:true});
+      })();
+    </script>
+  </body>
+</html>
