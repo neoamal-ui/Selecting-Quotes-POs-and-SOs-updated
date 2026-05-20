@@ -2173,6 +2173,14 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
       return sort.dir === "asc" ? g(a) - g(b) : g(b) - g(a);
     }) : searched;
     items.forEach((p) => { if (!map.has(p.group)) map.set(p.group, []); map.get(p.group).push(p); });
+    // Hoist inherited items to the top so they appear above the natural category sections
+    if (map.has("__INHERITED__")) {
+      const inh = map.get("__INHERITED__");
+      const ordered = new Map();
+      ordered.set("__INHERITED__", inh);
+      for (const [k, v] of map) { if (k !== "__INHERITED__") ordered.set(k, v); }
+      return ordered;
+    }
     return map;
   }, [PARTS, sort, tsLower, tableFilters]);
 
@@ -3193,7 +3201,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                 const gRev = items.filter(p => p.billable).reduce((s, p) => s + p.unitPrice * p.qty, 0);
                 const gBundles = groupBundles.get(gName) || [];
                 return [
-                  <TableRow key={"g-" + gi} className="group-header-row" hoverBg={false} draggable={!embedded && draggingGroup === gName} onDragOver={!embedded ? (e) => { e.preventDefault(); setDragOverItem("group:" + gName); } : undefined} onDrop={!embedded ? () => handleDrop("group:" + gName) : undefined} onDragEnd={!embedded ? () => handleGroupDragEnd(gName) : undefined} style={{ position: "sticky", top: isSticky ? 80 : 36, zIndex: 5, cursor: embedded ? "default" : "pointer", opacity: draggingGroup === gName ? 0.4 : 1, borderTop: dragOverItem === "group:" + gName && dragItem !== "group:" + gName ? "2px solid #3b82f6" : "1px solid #e8e7e2", boxShadow: "0 1px 0 #e8e7e2", height: embedded ? 36 : undefined }} onClick={() => toggleGroup(gName)}>
+                  <TableRow key={"g-" + gi} className="group-header-row" hoverBg={false} draggable={!embedded && draggingGroup === gName && gName !== "__INHERITED__"} onDragOver={!embedded ? (e) => { e.preventDefault(); setDragOverItem("group:" + gName); } : undefined} onDrop={!embedded ? () => handleDrop("group:" + gName) : undefined} onDragEnd={!embedded ? () => handleGroupDragEnd(gName) : undefined} style={{ position: "sticky", top: isSticky ? 80 : 36, zIndex: 5, cursor: embedded ? "default" : "pointer", opacity: draggingGroup === gName ? 0.4 : 1, borderTop: dragOverItem === "group:" + gName && dragItem !== "group:" + gName ? "2px solid #3b82f6" : "1px solid #e8e7e2", boxShadow: "0 1px 0 #e8e7e2", height: embedded ? 36 : undefined, ...(gName === "__INHERITED__" ? { display: "none" } : {}) }} onClick={() => toggleGroup(gName)}>
                     {!embedded && <TableCell className="group-header" style={{ padding: "0 4px 0 6px", verticalAlign: "middle", background: "#fafaf8", animationDelay: `${gi * 40}ms` }} onClick={e => e.stopPropagation()}>
                       <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                         <span className="drag-handle" onMouseDown={(e) => { e.stopPropagation(); handleGroupDragStart(gName); e.currentTarget.closest("tr").draggable = true; }} style={{ cursor: "grab", color: "#d0cfca", display: "flex", alignItems: "center", padding: "2px 0" }}>
@@ -4058,7 +4066,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
               q.items.forEach((it, idx) => {
                 next.push({
                   id: `${q.id}-LI${idx + 1}`,
-                  name: it.name, type: it.type, group: it.group,
+                  name: it.name, type: it.type, group: "__INHERITED__",
                   qty: it.qty, unit: it.unit, unitCost: it.unitCost, unitPrice: it.unitPrice,
                   billable: it.billable, description: it.description, sku: it.sku,
                   notes: null, thumb: it.type === "MAT" ? "shingle" : it.type === "EQ" ? "dumpster" : "permit",
@@ -4183,7 +4191,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
               po.items.forEach((it, idx) => {
                 next.push({
                   id: `${po.id}-LI${idx + 1}`,
-                  name: it.name, type: it.type, group: it.group,
+                  name: it.name, type: it.type, group: "__INHERITED__",
                   qty: it.qty, unit: it.unit, unitCost: it.unitCost, unitPrice: it.unitPrice,
                   billable: it.billable, description: it.description, sku: it.sku,
                   notes: null, thumb: it.type === "MAT" ? "shingle" : it.type === "EQ" ? "dumpster" : "truck",
