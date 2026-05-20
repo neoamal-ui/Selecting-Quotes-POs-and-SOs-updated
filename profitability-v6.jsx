@@ -3215,8 +3215,10 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                           <span className="group-title" style={{ fontSize: 12, fontWeight: 700, color: gName === "Inherited" ? "#1a1a18" : "#4a4a46" }}>{gName === "Inherited" ? "Inherited from Quote, PO/SO" : gName}</span>
                           <svg className="group-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#b0afa9" strokeWidth="1.5" strokeLinecap="round" style={{ transform: collapsedGroups.has(gName) ? "rotate(-90deg)" : "rotate(0deg)", transition: "transform 150ms ease", flexShrink: 0 }}><path d="M2 3.5l3 3 3-3"/></svg>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 11, color: "#8c8b86", ...tn, whiteSpace: "nowrap" }}>
                           {gName === "Inherited" && (
-                            <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginLeft: 6 }} onClick={e => e.stopPropagation()}>
+                            <div style={{ display: "inline-flex", alignItems: "center", gap: 6 }} onClick={e => e.stopPropagation()}>
                               <button onClick={() => { setInheritSlider("quote"); setInheritSearch(""); setInheritChecked(new Set()); }} className="btn-press" style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 6, border: "1px solid #dbeafe", background: "#eff6ff", color: "#1e40af", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}>
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                                 Add Quote
@@ -3227,8 +3229,6 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                               </button>
                             </div>
                           )}
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 11, color: "#8c8b86", ...tn, whiteSpace: "nowrap" }}>
                           <span style={{ fontSize: 10, fontWeight: 600, color: "#b0afa9" }}>{items.length} items</span>
                           <span>Cost {$(gCost)}</span>
                           {!embedded && <div style={{ position: "relative" }} onClick={e => e.stopPropagation()}>
