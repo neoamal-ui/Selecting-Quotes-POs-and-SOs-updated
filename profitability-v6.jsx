@@ -3213,17 +3213,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                     <TableCell colSpan={visibleCols.length + (embedded ? 1 : 2)} style={{ padding: embedded ? "7px 40px" : "4px 14px 4px 14px", background: "#fafaf8" }}>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          {gName === "Inherited" ? (
-                            <>
-                              <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 7px", borderRadius: 4, background: "#1a1a18", color: "#fff", letterSpacing: "0.04em", textTransform: "uppercase", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                Inherited
-                              </span>
-                              <span className="group-title" style={{ fontSize: 12, fontWeight: 700, color: "#1a1a18" }}>From Quotes &amp; PO/SO</span>
-                            </>
-                          ) : (
-                            <span className="group-title" style={{ fontSize: 12, fontWeight: 700, color: "#4a4a46" }}>{gName}</span>
-                          )}
+                          <span className="group-title" style={{ fontSize: 12, fontWeight: 700, color: gName === "Inherited" ? "#1a1a18" : "#4a4a46" }}>{gName === "Inherited" ? "Inherited from Quote, PO/SO" : gName}</span>
                           <svg className="group-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#b0afa9" strokeWidth="1.5" strokeLinecap="round" style={{ transform: collapsedGroups.has(gName) ? "rotate(-90deg)" : "rotate(0deg)", transition: "transform 150ms ease", flexShrink: 0 }}><path d="M2 3.5l3 3 3-3"/></svg>
                           {gName === "Inherited" && (
                             <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginLeft: 6 }} onClick={e => e.stopPropagation()}>
