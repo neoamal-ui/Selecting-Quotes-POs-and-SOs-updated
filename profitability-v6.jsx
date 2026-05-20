@@ -153,6 +153,69 @@ const QUOTES = [
   { id: "Q-1041-R1", name: "Rev 1 — chimney reflash", date: "Sep 22, 2024", status: "Approved", revenue: 30200, cogs: 16800, profit: 13400, materials: 9400, labor: 7400 },
   { id: "Q-1041-R2", name: "Rev 2 — HDZ upgrade", date: "Oct 3, 2024", status: "Sent", revenue: 31500, cogs: 17400, profit: 14100, materials: 10000, labor: 7400 },
 ];
+
+// Accepted quotes available to inherit from (no invoice, not associated to other jobs)
+const ACCEPTED_QUOTES = [
+  {
+    id: "Q-2104", title: "Premium gutter package", date: "Oct 8, 2024", value: 4820, status: "Accepted",
+    items: [
+      { name: "Seamless gutter — 5 in aluminum", type: "MAT", group: "Gutters & drainage", qty: 120, unit: "ft", unitCost: 6, unitPrice: 18, billable: true, description: "Continuous seamless aluminum gutter, front + back elevations", sku: "GT-SEAM-5AL" },
+      { name: "Downspout — 2×3 aluminum", type: "MAT", group: "Gutters & drainage", qty: 8, unit: "pc", unitCost: 12, unitPrice: 38, billable: true, description: "Pre-cut downspout assemblies with elbows", sku: "GT-DS-23AL" },
+      { name: "Gutter guard — mesh, 4 ft", type: "MAT", group: "Gutters & drainage", qty: 30, unit: "pc", unitCost: 8, unitPrice: 24, billable: true, description: "Stainless micromesh leaf guard", sku: "GT-GRD-MSH" },
+      { name: "Gutter install — labor", type: "SVC", group: "Gutters & drainage", qty: 1, unit: "lot", unitCost: 480, unitPrice: 920, billable: true, description: "Crew install of gutters and downspouts", sku: "SVC-GT-INST" },
+    ],
+  },
+  {
+    id: "Q-2118", title: "Skylight retrofit add-on", date: "Oct 14, 2024", value: 2980, status: "Accepted",
+    items: [
+      { name: "Velux fixed deck-mount skylight", type: "MAT", group: "Skylights", qty: 2, unit: "ea", unitCost: 410, unitPrice: 880, billable: true, description: "FCM 2246 deck-mount skylight, tempered low-E glass", sku: "VLX-FCM-2246" },
+      { name: "Skylight flashing kit", type: "MAT", group: "Skylights", qty: 2, unit: "kit", unitCost: 95, unitPrice: 220, billable: true, description: "EDL flashing kit for FCM 2246", sku: "VLX-EDL-2246" },
+      { name: "Skylight install — labor", type: "SVC", group: "Skylights", qty: 1, unit: "lot", unitCost: 380, unitPrice: 740, billable: true, description: "Cut-in, frame, flash, and finish", sku: "SVC-SKY-INST" },
+    ],
+  },
+  {
+    id: "Q-2125", title: "Attic ventilation upgrade", date: "Oct 19, 2024", value: 1640, status: "Accepted",
+    items: [
+      { name: "Power attic fan — solar", type: "EQ", group: "Ventilation", qty: 1, unit: "ea", unitCost: 280, unitPrice: 650, billable: true, description: "Solar-powered attic exhaust fan, 30W panel", sku: "VN-FAN-SOL" },
+      { name: "Soffit vent — 8×16 aluminum", type: "MAT", group: "Ventilation", qty: 8, unit: "ea", unitCost: 14, unitPrice: 56, billable: true, description: "Under-eave aluminum soffit vent", sku: "VN-SOFF-816" },
+      { name: "Ventilation install — labor", type: "SVC", group: "Ventilation", qty: 1, unit: "lot", unitCost: 240, unitPrice: 540, billable: true, description: "Cut-in, mount, and wire attic fan + soffit vents", sku: "SVC-VN-INST" },
+    ],
+  },
+];
+
+// Submitted POs available to inherit from (active, not cancelled/archived, not associated to other jobs)
+const SUBMITTED_POS = [
+  {
+    id: "PO-3041", type: "PO", title: "Roofing materials — GAF supplier", date: "Oct 12, 2024", value: 4275, status: "Submitted", vendor: "ABC Building Supply",
+    items: [
+      { name: "GAF Timberline HDZ — Charcoal", type: "MAT", group: "Roofing materials", qty: 31, unit: "sq", unitCost: 108, unitPrice: 385, billable: true, description: "Architectural shingle (received price)", sku: "GAF-HDZ-CHAR" },
+      { name: "Synthetic underlayment — FeltBuster", type: "MAT", group: "Roofing materials", qty: 10, unit: "roll", unitCost: 62, unitPrice: 195, billable: true, description: "High-traction synthetic underlayment", sku: "UND-FB-10SQ" },
+      { name: "Ice & water shield — 36 in", type: "MAT", group: "Roofing materials", qty: 6, unit: "roll", unitCost: 92, unitPrice: 305, billable: true, description: "Self-adhering waterproofing membrane", sku: "IWS-36-SA" },
+    ],
+  },
+  {
+    id: "PO-3055", type: "PO", title: "Flashing & trim restock", date: "Oct 16, 2024", value: 1180, status: "Submitted", vendor: "Metro Roofing Supply",
+    items: [
+      { name: "Drip edge — aluminum, white", type: "MAT", group: "Flashing & trim", qty: 24, unit: "pc", unitCost: 8.25, unitPrice: 30, billable: true, description: "Type D aluminum drip edge", sku: "FL-DRIP-WH" },
+      { name: "Step flashing — 4×4 galv", type: "MAT", group: "Flashing & trim", qty: 50, unit: "pc", unitCost: 1.65, unitPrice: 7.5, billable: true, description: "Pre-bent galvanized step flashing", sku: "FL-STEP-4G" },
+      { name: "Chimney flashing kit — lead/alum", type: "MAT", group: "Flashing & trim", qty: 1, unit: "kit", unitCost: 178, unitPrice: 775, billable: true, description: "Two-piece chimney flashing kit", sku: "FL-CHIM-KIT" },
+    ],
+  },
+  {
+    id: "SO-4012", type: "SO", title: "Tear-off subcontractor", date: "Oct 10, 2024", value: 2400, status: "Submitted", vendor: "Apex Demolition LLC",
+    items: [
+      { name: "Tear-off labor — 2-layer", type: "SVC", group: "Tear-off & disposal", qty: 28, unit: "sq", unitCost: 42, unitPrice: 210, billable: true, description: "Subcontracted tear-off crew, 2-layer roof", sku: "SVC-TEAR-2L" },
+      { name: "Haul-away & dump fees", type: "SVC", group: "Tear-off & disposal", qty: 1, unit: "lot", unitCost: 640, unitPrice: 1680, billable: true, description: "Disposal and transport via subcontractor", sku: "SVC-HAUL-01" },
+    ],
+  },
+  {
+    id: "SO-4025", type: "SO", title: "Chimney mason subcontractor", date: "Oct 17, 2024", value: 1450, status: "Submitted", vendor: "Hearth & Stone Masonry",
+    items: [
+      { name: "Chimney cricket rebuild — labor", type: "SVC", group: "Flashing & trim", qty: 1, unit: "lot", unitCost: 720, unitPrice: 1450, billable: true, description: "Subcontracted mason for cricket rebuild and reflashing", sku: "SVC-CHIM-MSN" },
+    ],
+  },
+];
+const SUBMITTED_SOS = SUBMITTED_POS.filter(p => p.type === "SO");
 const PRICELISTS = [
   { id: "default", name: "Standard pricing" },
   { id: "preferred", name: "Preferred customer" },
@@ -1859,6 +1922,21 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
   const [itemSelections, setItemSelections] = useState(new Map());
   const [colorPickerOpen, setColorPickerOpen] = useState(null);
 
+  // Inherit-from menu + selection sliders
+  const [showInheritMenu, setShowInheritMenu] = useState(false);
+  const [inheritSlider, setInheritSlider] = useState(null); // "quote" | "po-so" | null
+  const [inheritSearch, setInheritSearch] = useState("");
+  const [inheritChecked, setInheritChecked] = useState(new Set());
+  const [inheritTypeFilter, setInheritTypeFilter] = useState(null); // "PO" | "SO" | null
+  const [inheritStatusFilter, setInheritStatusFilter] = useState(null); // "Submitted" | null
+  const [inheritTypeMenuOpen, setInheritTypeMenuOpen] = useState(false);
+  const [inheritStatusMenuOpen, setInheritStatusMenuOpen] = useState(false);
+  const [linkedQuotes, setLinkedQuotes] = useState([]); // [{id,title,date,value,status,items}]
+  const [linkedPos, setLinkedPos] = useState([]); // [{id,type,title,date,value,status,vendor,items}]
+  const [selectedSourceChips, setSelectedSourceChips] = useState(new Set()); // ids selected for bulk remove
+  const [removeConfirm, setRemoveConfirm] = useState(null); // { kind: "quote"|"po", ids: [...] }
+  const [toast, setToast] = useState(null); // string
+
   const showTooltip = (key) => {
     clearTimeout(tooltipTimeout.current);
     setHoveredMetric(key);
@@ -1968,6 +2046,12 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, [showAddMenu]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const id = setTimeout(() => setToast(null), 3800);
+    return () => clearTimeout(id);
+  }, [toast]);
 
   const billable = PARTS.filter((p) => p.billable);
   const partsRev = billable.reduce((s, p) => s + p.unitPrice * p.qty, 0);
@@ -2709,9 +2793,9 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
               <button onClick={() => { setShowMenu(!showMenu); setShowPricelistMenu(false); setShowFinancingMenu(false); setShowColConfig(false); setPricelistSearch(""); setFinancingSearch(""); }} className="btn-press" style={{ width: 28, height: 28, padding: 0, borderRadius: 7, border: "1px solid #e0dfda", background: showMenu ? "#f5f4f0" : "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#6b6a65", fontSize: 18, lineHeight: 1, transition: "background 120ms ease, border-color 120ms ease" }}>⋯</button>
               {showMenu && (
                 <>
-                  <div style={{ position: "fixed", inset: 0, zIndex: 19 }} onClick={() => { setShowMenu(false); setShowPricelistMenu(false); setShowFinancingMenu(false); setShowDiscountMenu(false); setShowColConfig(false); }} />
+                  <div style={{ position: "fixed", inset: 0, zIndex: 19 }} onClick={() => { setShowMenu(false); setShowPricelistMenu(false); setShowFinancingMenu(false); setShowDiscountMenu(false); setShowColConfig(false); setShowInheritMenu(false); }} />
                   <div className="dropdown-enter" style={{ position: "absolute", right: 0, top: "calc(100% + 4px)", width: 240, background: "#fff", border: "1px solid #e0dfda", borderRadius: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", zIndex: 20, padding: "4px 0" }}>
-                <button onClick={() => { setShowPricelistMenu(v => !v); setShowFinancingMenu(false); setShowDiscountMenu(false); setShowColConfig(false); setPricelistSearch(""); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", border: "none", background: showPricelistMenu ? "#f5f4f0" : "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left", overflow: "hidden" }}>
+                <button onClick={() => { setShowPricelistMenu(v => !v); setShowFinancingMenu(false); setShowDiscountMenu(false); setShowColConfig(false); setShowInheritMenu(false); setPricelistSearch(""); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", border: "none", background: showPricelistMenu ? "#f5f4f0" : "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left", overflow: "hidden" }}>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M4 7h16M4 12h16M4 17h10"/><circle cx="19" cy="17" r="3"/><path d="M17.5 18.5L16 20"/></svg>
                   <span style={{ fontWeight: pricelistId !== "default" ? 600 : 400, whiteSpace: "nowrap" }}>Pricelist</span>
                   <span style={{ flex: 1 }} />
@@ -2746,7 +2830,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                     )}
                   </div>
                 )}
-                <button onClick={() => { setShowFinancingMenu(v => !v); setShowPricelistMenu(false); setShowColConfig(false); setFinancingSearch(""); setFinancingSubmenu(null); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", border: "none", background: showFinancingMenu ? "#f5f4f0" : "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left", overflow: "hidden" }}>
+                <button onClick={() => { setShowFinancingMenu(v => !v); setShowPricelistMenu(false); setShowDiscountMenu(false); setShowColConfig(false); setShowInheritMenu(false); setFinancingSearch(""); setFinancingSubmenu(null); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", border: "none", background: showFinancingMenu ? "#f5f4f0" : "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left", overflow: "hidden" }}>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
                   <span style={{ fontWeight: financingId !== "none" ? 600 : 400, whiteSpace: "nowrap" }}>Financing</span>
                   <span style={{ flex: 1 }} />
@@ -2875,7 +2959,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                     ))}
                   </div>
                 )}
-                <button onClick={() => { setShowDiscountMenu(v => !v); setShowPricelistMenu(false); setShowFinancingMenu(false); setShowColConfig(false); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", border: "none", background: showDiscountMenu ? "#f5f4f0" : "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left", overflow: "hidden" }}>
+                <button onClick={() => { setShowDiscountMenu(v => !v); setShowPricelistMenu(false); setShowFinancingMenu(false); setShowColConfig(false); setShowInheritMenu(false); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", border: "none", background: showDiscountMenu ? "#f5f4f0" : "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left", overflow: "hidden" }}>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
                   <span style={{ fontWeight: 600, whiteSpace: "nowrap" }}>Discount</span>
                   <span style={{ flex: 1 }} />
@@ -2910,8 +2994,33 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                     })}
                   </div>
                 )}
+                <button onClick={() => { setShowInheritMenu(v => !v); setShowPricelistMenu(false); setShowFinancingMenu(false); setShowDiscountMenu(false); setShowColConfig(false); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", border: "none", background: showInheritMenu ? "#f5f4f0" : "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left", overflow: "hidden" }}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <span style={{ fontWeight: 600, whiteSpace: "nowrap" }}>Inherit from</span>
+                  <span style={{ flex: 1 }} />
+                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="#8c8b86" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M3 1l3 3-3 3"/></svg>
+                </button>
+                {showInheritMenu && (
+                  <div className="dropdown-enter" style={{ position: "absolute", right: "calc(100% + 4px)", top: 122, width: 240, background: "#fff", border: "1px solid #e0dfda", borderRadius: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04)", zIndex: 21, padding: "4px 0", transformOrigin: "top right" }}>
+                    <div style={{ padding: "6px 14px 8px", fontSize: 11, fontWeight: 600, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Add line items from</div>
+                    <button onClick={() => { setInheritSlider("quote"); setInheritSearch(""); setInheritChecked(new Set()); setShowInheritMenu(false); setShowMenu(false); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", border: "none", background: "none", cursor: "pointer", textAlign: "left", fontSize: 13, color: "#1a1a18" }}>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 500 }}>Add Accepted Quotes</div>
+                        <div style={{ fontSize: 11, color: "#a3a29c", marginTop: 1 }}>Parts & services from quotes</div>
+                      </div>
+                    </button>
+                    <button onClick={() => { setInheritSlider("po-so"); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null); setShowInheritMenu(false); setShowMenu(false); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", border: "none", background: "none", cursor: "pointer", textAlign: "left", fontSize: 13, color: "#1a1a18" }}>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 500 }}>Add Submitted PO/SO's</div>
+                        <div style={{ fontSize: 11, color: "#a3a29c", marginTop: 1 }}>Parts from PO, services from SO</div>
+                      </div>
+                    </button>
+                  </div>
+                )}
                 <div style={{ height: 1, background: "#e8e7e2", margin: "4px 0" }} />
-                <button onClick={() => { setShowColConfig(v => !v); setShowPricelistMenu(false); setShowFinancingMenu(false); setShowDiscountMenu(false); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", border: "none", background: showColConfig ? "#f5f4f0" : "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left" }}>
+                <button onClick={() => { setShowColConfig(v => !v); setShowPricelistMenu(false); setShowFinancingMenu(false); setShowDiscountMenu(false); setShowInheritMenu(false); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", border: "none", background: showColConfig ? "#f5f4f0" : "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left" }}>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M12 3v18M3 12h18M9 3h6M9 21h6M3 9v6M21 9v6"/></svg>
                   <span style={{ flex: 1 }}>Customize columns</span>
                   <svg width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="#8c8b86" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M3 1l3 3-3 3"/></svg>
@@ -2921,6 +3030,78 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
               )}
             </div>
           </div>}
+
+          {/* Linked Quotes / PO / SO chips */}
+          {!embedded && (linkedQuotes.length > 0 || linkedPos.length > 0) && (
+            <div style={{ padding: "12px 14px", borderBottom: "1px solid #f0eeea", background: "linear-gradient(180deg, #fafaf8 0%, #fff 100%)" }}>
+              {(() => {
+                const allChipIds = [...linkedQuotes.map(q => q.id), ...linkedPos.map(p => p.id)];
+                const allChipChecked = allChipIds.length > 0 && allChipIds.every(id => selectedSourceChips.has(id));
+                const someChipChecked = allChipIds.some(id => selectedSourceChips.has(id));
+                const selQuotes = linkedQuotes.filter(q => selectedSourceChips.has(q.id)).map(q => q.id);
+                const selPos = linkedPos.filter(p => selectedSourceChips.has(p.id)).map(p => p.id);
+                return (
+                  <>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                      <input type="checkbox" checked={allChipChecked} ref={el => { if (el) el.indeterminate = !allChipChecked && someChipChecked; }} onChange={e => setSelectedSourceChips(e.target.checked ? new Set(allChipIds) : new Set())} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18", margin: 0 }} />
+                      <span style={{ fontSize: 11, fontWeight: 700, color: "#6b6a65", textTransform: "uppercase", letterSpacing: "0.06em" }}>Inherited from {linkedQuotes.length > 0 && `${linkedQuotes.length} quote${linkedQuotes.length === 1 ? "" : "s"}`}{linkedQuotes.length > 0 && linkedPos.length > 0 && " · "}{linkedPos.length > 0 && `${linkedPos.length} PO/SO`}</span>
+                      <span style={{ flex: 1 }} />
+                      {selectedSourceChips.size > 0 && (
+                        <button onClick={() => {
+                          if (selPos.length === 0) setRemoveConfirm({ kind: "quote", ids: selQuotes });
+                          else if (selQuotes.length === 0) setRemoveConfirm({ kind: "po", ids: selPos });
+                          else setRemoveConfirm({ kind: "mixed", ids: [...selQuotes, ...selPos], quoteIds: selQuotes, poIds: selPos });
+                        }} style={{ fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 5, border: "1px solid #fecaca", background: "#fff", color: "#991b1b", cursor: "pointer" }}>Remove selected ({selectedSourceChips.size})</button>
+                      )}
+                      <button onClick={() => { setInheritSlider("quote"); setInheritSearch(""); setInheritChecked(new Set()); }} style={{ fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 5, border: "1px solid #e0dfda", background: "#fff", color: "#4a4a46", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Add Quote
+                      </button>
+                      <button onClick={() => { setInheritSlider("po-so"); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null); }} style={{ fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 5, border: "1px solid #e0dfda", background: "#fff", color: "#4a4a46", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Add PO/SO
+                      </button>
+                    </div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      {linkedQuotes.map(q => {
+                        const sel = selectedSourceChips.has(q.id);
+                        const toggle = () => setSelectedSourceChips(prev => { const n = new Set(prev); if (n.has(q.id)) n.delete(q.id); else n.add(q.id); return n; });
+                        return (
+                          <div key={q.id} className="btn-press" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 8px 5px 6px", borderRadius: 7, border: `1px solid ${sel ? "#1a1a18" : "#dbeafe"}`, background: sel ? "#1a1a18" : "#eff6ff", color: sel ? "#fff" : "#1e3a8a", cursor: "pointer", transition: "all 120ms ease" }} onClick={toggle}>
+                            <input type="checkbox" checked={sel} onChange={toggle} onClick={e => e.stopPropagation()} style={{ width: 12, height: 12, cursor: "pointer", accentColor: sel ? "#fff" : "#1a1a18", margin: 0 }} />
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            <span style={{ fontSize: 11, fontWeight: 700, ...tn }}>{q.id}</span>
+                            <span style={{ fontSize: 11, fontWeight: 500, opacity: 0.85, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 140 }}>{q.title}</span>
+                            <span style={{ fontSize: 11, fontWeight: 600, ...tn, opacity: 0.75 }}>{$(q.value)}</span>
+                            <button onClick={e => { e.stopPropagation(); setRemoveConfirm({ kind: "quote", ids: [q.id] }); }} aria-label="Remove" style={{ background: "none", border: "none", cursor: "pointer", color: sel ? "#fff" : "#6b6a65", padding: 0, display: "flex", alignItems: "center", marginLeft: 2 }}>
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
+                          </div>
+                        );
+                      })}
+                      {linkedPos.map(p => {
+                        const sel = selectedSourceChips.has(p.id);
+                        const toggle = () => setSelectedSourceChips(prev => { const n = new Set(prev); if (n.has(p.id)) n.delete(p.id); else n.add(p.id); return n; });
+                        const isPO = p.type === "PO";
+                        return (
+                          <div key={p.id} className="btn-press" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 8px 5px 6px", borderRadius: 7, border: `1px solid ${sel ? "#1a1a18" : isPO ? "#fde68a" : "#fecaca"}`, background: sel ? "#1a1a18" : isPO ? "#fef3c7" : "#fee2e2", color: sel ? "#fff" : isPO ? "#854d0e" : "#991b1b", cursor: "pointer", transition: "all 120ms ease" }} onClick={toggle}>
+                            <input type="checkbox" checked={sel} onChange={toggle} onClick={e => e.stopPropagation()} style={{ width: 12, height: 12, cursor: "pointer", accentColor: sel ? "#fff" : "#1a1a18", margin: 0 }} />
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                            <span style={{ fontSize: 11, fontWeight: 700, ...tn }}>{p.id}</span>
+                            <span style={{ fontSize: 11, fontWeight: 500, opacity: 0.85, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 140 }}>{p.title}</span>
+                            <span style={{ fontSize: 11, fontWeight: 600, ...tn, opacity: 0.75 }}>{$(p.value)}</span>
+                            <button onClick={e => { e.stopPropagation(); setRemoveConfirm({ kind: "po", ids: [p.id] }); }} aria-label="Remove" style={{ background: "none", border: "none", cursor: "pointer", color: sel ? "#fff" : "#6b6a65", padding: 0, display: "flex", alignItems: "center", marginLeft: 2 }}>
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+          )}
 
           <Table style={{ tableLayout: "fixed", width: "100%" }}>
             <colgroup>
@@ -3231,10 +3412,10 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                     const menuOpen = rowMenu === p.id;
                     const pSerial = String(++_serialCtr).padStart(3, "0");
                     return (
-                      <TableRow key={p.id} draggable={!embedded} onClick={embedded ? () => setViewItem(p) : undefined} onKeyDown={embedded ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setViewItem(p); } } : undefined} tabIndex={embedded ? 0 : undefined} aria-label={embedded ? `View details for ${p.name}` : undefined} onDragStart={!embedded ? () => handleDragStart(p.id) : undefined} onDragOver={!embedded ? (e) => handleDragOver(e, p.id) : undefined} onDrop={!embedded ? () => handleDrop(p.id) : undefined} onDragEnd={!embedded ? () => { setDragItem(null); setDragOverItem(null); } : undefined} data-selected={!embedded && selected.has(p.id) || undefined} style={{ cursor: embedded ? "pointer" : undefined, opacity: dragItem === p.id ? 0.4 : 1, borderTop: dragOverItem === p.id && dragItem !== p.id ? "2px solid #3b82f6" : undefined }}>
+                      <TableRow key={p.id} draggable={!embedded && !p._locked} onClick={embedded ? () => setViewItem(p) : undefined} onKeyDown={embedded ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setViewItem(p); } } : undefined} tabIndex={embedded ? 0 : undefined} aria-label={embedded ? `View details for ${p.name}` : undefined} onDragStart={!embedded && !p._locked ? () => handleDragStart(p.id) : undefined} onDragOver={!embedded ? (e) => handleDragOver(e, p.id) : undefined} onDrop={!embedded ? () => handleDrop(p.id) : undefined} onDragEnd={!embedded ? () => { setDragItem(null); setDragOverItem(null); } : undefined} data-selected={!embedded && selected.has(p.id) || undefined} style={{ cursor: embedded ? "pointer" : undefined, opacity: dragItem === p.id ? 0.4 : 1, background: p._locked ? "#fafaf8" : undefined, borderTop: dragOverItem === p.id && dragItem !== p.id ? "2px solid #3b82f6" : undefined }}>
                         {!embedded && <TableCell style={{ padding: "0 4px 0 6px", textAlign: "center", verticalAlign: "middle" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                            <span className="drag-handle" style={{ cursor: "grab", color: "#d0cfca", display: "flex", alignItems: "center", padding: "2px 0" }} onMouseDown={e => e.currentTarget.closest("tr").draggable = true}>
+                            <span className="drag-handle" style={{ cursor: p._locked ? "not-allowed" : "grab", color: "#d0cfca", display: "flex", alignItems: "center", padding: "2px 0", opacity: p._locked ? 0.4 : 1 }} onMouseDown={e => { if (!p._locked) e.currentTarget.closest("tr").draggable = true; }}>
                               <svg width="8" height="14" viewBox="0 0 8 14" fill="currentColor"><circle cx="2" cy="2" r="1.2"/><circle cx="6" cy="2" r="1.2"/><circle cx="2" cy="7" r="1.2"/><circle cx="6" cy="7" r="1.2"/><circle cx="2" cy="12" r="1.2"/><circle cx="6" cy="12" r="1.2"/></svg>
                             </span>
                             <span className="row-serial" style={{ fontSize: 11, fontWeight: 600, color: "#b0afa9", fontVariantNumeric: "tabular-nums", letterSpacing: "0.02em", flex: 1, textAlign: "center" }}>{pSerial}</span>
@@ -3242,15 +3423,27 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                           </div>
                         </TableCell>}
                         <TableCell style={{ padding: embedded ? "12px 14px 12px 40px" : "12px 14px" }}>
-                          <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                          <div style={{ display: "flex", alignItems: "flex-start", gap: 10, opacity: p._locked ? 0.78 : 1 }}>
                             <Thumb type={p.thumb} />
                             <div style={{ minWidth: 0, flex: 1 }}>
-                              <span className="hover-link" onClick={(e) => { e.stopPropagation(); setViewItem(p); }} style={{ fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", cursor: "pointer", display: "block" }}>{p.name}</span>
+                              <span className="hover-link" onClick={(e) => { e.stopPropagation(); setViewItem(p); }} style={{ fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", cursor: "pointer", display: "block", color: p._locked ? "#4a4a46" : "#1a1a18" }}>{p.name}</span>
                               {!devFlags.hideDescription && p.description && <div style={{ fontSize: 11, color: "#b0afa9", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 320 }}>{p.description}</div>}
-                              <div style={{ fontSize: 11, color: "#a3a29c", marginTop: 1, display: "flex", alignItems: "center", gap: 5 }}>
+                              <div style={{ fontSize: 11, color: "#a3a29c", marginTop: 1, display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
                                 <span style={tn}>{p.id}</span>
                                 {p.sku && <><span style={{ color: "#d0cfca" }}>·</span><span style={{ ...tn, fontSize: 10, color: "#b0afa9" }}>{p.sku}</span></>}
                                 {nb && <span style={{ fontSize: 9, fontWeight: 700, padding: "1px 5px", borderRadius: 3, background: "#fef3c7", color: "#92400e" }}>NON-BILLABLE</span>}
+                                {p._source === "quote" && (
+                                  <span style={{ fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 3, background: "#dbeafe", color: "#1e40af", display: "inline-flex", alignItems: "center", gap: 3 }}>
+                                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                    FROM QUOTE {p._sourceId}
+                                  </span>
+                                )}
+                                {(p._source === "po" || p._source === "so") && (
+                                  <span style={{ fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 3, background: p._source === "po" ? "#fef3c7" : "#fee2e2", color: p._source === "po" ? "#854d0e" : "#991b1b", display: "inline-flex", alignItems: "center", gap: 3 }}>
+                                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                                    FROM {p._source.toUpperCase()} {p._sourceId}
+                                  </span>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -3300,23 +3493,46 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                           if (c.id === "markup") return <TableCell key={c.id} style={{ padding: cp, textAlign: "right", fontSize: 13, ...tn, color: "#1a1a18" }}>{nb ? "—" : (mkup.toFixed(0) + "%")}</TableCell>;
                           return null;
                         })}
-                        {!embedded && <TableCell style={{ padding: "12px 8px", textAlign: "center", position: "relative" }}>
-                          <span className={menuOpen ? undefined : "row-dots"} onClick={(e) => { e.stopPropagation(); setRowMenu(menuOpen ? null : p.id); }} style={{ color: "#c5c4bf", cursor: "pointer", fontSize: 18, lineHeight: 1 }}>⋯</span>
+                        {!embedded && <TableCell style={{ padding: "12px 8px", textAlign: "center", position: "relative", verticalAlign: "middle" }}>
+                          <div style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                            {p._source === "quote" && (
+                              <span title={`Added from Quote ${p._sourceId}`} onClick={(e) => { e.stopPropagation(); window.open(`#quote/${p._sourceId}?lineItem=${p.id}`, "_blank"); }} style={{ cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", width: 18, height: 18, borderRadius: 4, background: "#dbeafe", color: "#1e40af" }}>
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                              </span>
+                            )}
+                            {(p._source === "po" || p._source === "so") && (
+                              <span title={`Added from ${p._source.toUpperCase()} ${p._sourceId}`} onClick={(e) => { e.stopPropagation(); window.open(`#${p._source}/${p._sourceId}?lineItem=${p.id}`, "_blank"); }} style={{ cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", width: 18, height: 18, borderRadius: 4, background: p._source === "po" ? "#fef3c7" : "#fee2e2", color: p._source === "po" ? "#854d0e" : "#991b1b" }}>
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                              </span>
+                            )}
+                            <span className={menuOpen ? undefined : "row-dots"} onClick={(e) => { e.stopPropagation(); setRowMenu(menuOpen ? null : p.id); }} style={{ color: "#c5c4bf", cursor: "pointer", fontSize: 18, lineHeight: 1 }}>⋯</span>
+                          </div>
                           {menuOpen && (
-                            <div className="dropdown-enter" style={{ position: "absolute", right: 8, top: "100%", width: 200, background: "#fff", border: "1px solid #e0dfda", borderRadius: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", zIndex: 50 }}>
+                            <div className="dropdown-enter" style={{ position: "absolute", right: 8, top: "100%", width: 220, background: "#fff", border: "1px solid #e0dfda", borderRadius: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", zIndex: 50 }}>
                               <button onClick={(e) => { e.stopPropagation(); setViewItem(p); setRowMenu(null); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", border: "none", background: "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left" }}>
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M20.188 10.934c.388.472.582.707.582 1.066s-.194.594-.582 1.066C18.768 14.79 15.636 18 12 18c-3.636 0-6.768-3.21-8.188-4.934C3.424 12.594 3.23 12.36 3.23 12s.194-.594.582-1.066C5.232 9.21 8.364 6 12 6c3.636 0 6.768 3.21 8.188 4.934z"/></svg>
                                 View item details
                               </button>
-                              <div style={{ height: 1, background: "#f0eeea", margin: "2px 0" }} />
-                              <button onClick={(e) => { e.stopPropagation(); setEditItem({ ...p }); setViewItem(p); setRowMenu(null); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", border: "none", background: "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left" }}>
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                                Edit item
-                              </button>
-                              <button className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", border: "none", background: "none", cursor: "pointer", fontSize: 13, color: "#991b1b", textAlign: "left" }}>
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#991b1b" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
-                                Remove
-                              </button>
+                              {p._locked ? (
+                                <>
+                                  <div style={{ height: 1, background: "#f0eeea", margin: "2px 0" }} />
+                                  <div style={{ padding: "10px 14px", fontSize: 11, color: "#8c8b86", lineHeight: 1.45, background: "#fafaf8" }}>
+                                    Editing locked — line item inherited from {p._source === "po" ? "PO" : "SO"} <strong style={{ ...tn, color: "#4a4a46" }}>{p._sourceId}</strong>. Remove the {p._source === "po" ? "PO" : "SO"} link to edit.
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <div style={{ height: 1, background: "#f0eeea", margin: "2px 0" }} />
+                                  <button onClick={(e) => { e.stopPropagation(); setEditItem({ ...p }); setViewItem(p); setRowMenu(null); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", border: "none", background: "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left" }}>
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    Edit item
+                                  </button>
+                                  <button onClick={(e) => { e.stopPropagation(); setParts(prev => prev.filter(x => x.id !== p.id)); setRowMenu(null); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", border: "none", background: "none", cursor: "pointer", fontSize: 13, color: "#991b1b", textAlign: "left" }}>
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#991b1b" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+                                    Remove
+                                  </button>
+                                </>
+                              )}
                             </div>
                           )}
                         </TableCell>}
@@ -3901,6 +4117,342 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
         );
       })(), document.body)}
 
+      {/* Inherit-from slider: Accepted Quotes */}
+      {inheritSlider === "quote" && createPortal((() => {
+        const linkedIds = new Set(linkedQuotes.map(q => q.id));
+        const available = ACCEPTED_QUOTES.filter(q => !linkedIds.has(q.id));
+        const filtered = available.filter(q => {
+          if (!inheritSearch) return true;
+          const s = inheritSearch.toLowerCase();
+          return q.id.toLowerCase().includes(s) || q.title.toLowerCase().includes(s);
+        });
+        const allFilteredIds = filtered.map(q => q.id);
+        const allChecked = allFilteredIds.length > 0 && allFilteredIds.every(id => inheritChecked.has(id));
+        const someChecked = allFilteredIds.some(id => inheritChecked.has(id));
+        const close = () => { setInheritSlider(null); setInheritSearch(""); setInheritChecked(new Set()); };
+        const handleAdd = () => {
+          const toAdd = available.filter(q => inheritChecked.has(q.id));
+          if (toAdd.length === 0) { close(); return; }
+          setLinkedQuotes(prev => [...prev, ...toAdd]);
+          // Append line items to parts with source metadata
+          setParts(prev => {
+            const next = [...prev];
+            toAdd.forEach(q => {
+              q.items.forEach((it, idx) => {
+                next.push({
+                  id: `${q.id}-LI${idx + 1}`,
+                  name: it.name, type: it.type, group: it.group,
+                  qty: it.qty, unit: it.unit, unitCost: it.unitCost, unitPrice: it.unitPrice,
+                  billable: it.billable, description: it.description, sku: it.sku,
+                  notes: null, thumb: it.type === "MAT" ? "shingle" : it.type === "EQ" ? "dumpster" : "permit",
+                  _source: "quote", _sourceId: q.id, _sourceTitle: q.title,
+                });
+              });
+            });
+            return next;
+          });
+          setToast(`Added ${toAdd.length} quote${toAdd.length > 1 ? "s" : ""} to the job`);
+          close();
+        };
+        return (
+          <>
+            <div className="overlay-enter sidesheet-overlay" onClick={close} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.2)", zIndex: 100 }} />
+            <div className="sidesheet-enter" style={{ position: "fixed", top: 0, right: 0, bottom: 0, width: 720, background: "#fff", zIndex: 101, boxShadow: "-8px 0 32px rgba(0,0,0,0.1)", display: "flex", flexDirection: "column" }}>
+              {/* Header */}
+              <div style={{ padding: "18px 24px 14px", borderBottom: "1px solid #e8e7e2", display: "flex", alignItems: "flex-start", gap: 12 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: "#1a1a18" }}>Select Accepted quotes to be added to the Job</div>
+                  <div style={{ fontSize: 12, color: "#8c8b86", marginTop: 4 }}>This will add the Parts and Services line items from Quote to Job.</div>
+                </div>
+                <button onClick={close} aria-label="Close" style={{ background: "none", border: "none", cursor: "pointer", color: "#8c8b86", padding: 4, display: "flex", alignItems: "center", borderRadius: 6 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+              {/* Search */}
+              <div style={{ padding: "12px 24px", borderBottom: "1px solid #f0eeea", background: "#fafaf8" }}>
+                <div style={{ position: "relative" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a3a29c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input
+                    type="text"
+                    autoFocus
+                    placeholder="Search by quote number or title..."
+                    value={inheritSearch}
+                    onChange={e => setInheritSearch(e.target.value)}
+                    style={{ width: "100%", fontSize: 13, padding: "8px 10px 8px 32px", borderRadius: 7, border: "1px solid #e0dfda", background: "#fff", outline: "none" }}
+                  />
+                </div>
+              </div>
+              {/* Table */}
+              <div style={{ flex: 1, overflow: "auto" }}>
+                {filtered.length === 0 ? (
+                  <div style={{ padding: 40, textAlign: "center", color: "#8c8b86", fontSize: 13 }}>
+                    {available.length === 0 ? "All accepted quotes are already linked to this job." : "No accepted quotes match your search."}
+                  </div>
+                ) : (
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <thead>
+                      <tr style={{ borderBottom: "1px solid #e8e7e2", background: "#fafaf8", position: "sticky", top: 0, zIndex: 1 }}>
+                        <th style={{ padding: "10px 12px 10px 24px", width: 36, textAlign: "left" }}>
+                          <input type="checkbox" checked={allChecked} ref={el => { if (el) el.indeterminate = !allChecked && someChecked; }} onChange={e => { const next = new Set(inheritChecked); if (e.target.checked) allFilteredIds.forEach(id => next.add(id)); else allFilteredIds.forEach(id => next.delete(id)); setInheritChecked(next); }} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
+                        </th>
+                        <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Quote #</th>
+                        <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Title</th>
+                        <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Date</th>
+                        <th style={{ padding: "10px 12px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Value</th>
+                        <th style={{ padding: "10px 24px 10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filtered.map(q => {
+                        const checked = inheritChecked.has(q.id);
+                        const toggle = () => setInheritChecked(prev => { const n = new Set(prev); if (n.has(q.id)) n.delete(q.id); else n.add(q.id); return n; });
+                        return (
+                          <tr key={q.id} onClick={toggle} className="picker-row" style={{ cursor: "pointer", borderBottom: "1px solid #f0eeea", background: checked ? "#fafaf8" : "transparent" }}>
+                            <td style={{ padding: "12px 12px 12px 24px" }}>
+                              <input type="checkbox" checked={checked} onChange={toggle} onClick={e => e.stopPropagation()} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
+                            </td>
+                            <td style={{ padding: "12px", fontSize: 13, fontWeight: 600, color: "#1a1a18", ...tn }}>{q.id}</td>
+                            <td style={{ padding: "12px", fontSize: 13, color: "#1a1a18" }}>
+                              <div style={{ fontWeight: 500 }}>{q.title}</div>
+                              <div style={{ fontSize: 11, color: "#a3a29c", marginTop: 2 }}>{q.items.length} line item{q.items.length === 1 ? "" : "s"}</div>
+                            </td>
+                            <td style={{ padding: "12px", fontSize: 12, color: "#6b6a65", ...tn }}>{q.date}</td>
+                            <td style={{ padding: "12px", textAlign: "right", fontSize: 13, fontWeight: 600, color: "#1a1a18", ...tn }}>{$(q.value)}</td>
+                            <td style={{ padding: "12px 24px 12px 12px" }}>
+                              <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 5, background: "#dcfce7", color: "#166534" }}>{q.status}</span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+              {/* Footer */}
+              <div style={{ padding: "14px 24px", borderTop: "1px solid #e8e7e2", background: "#fafaf8", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                <span style={{ fontSize: 12, color: "#8c8b86" }}>{inheritChecked.size > 0 ? `${inheritChecked.size} quote${inheritChecked.size > 1 ? "s" : ""} selected` : "Select accepted quotes to add"}</span>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button onClick={close} style={{ fontSize: 13, fontWeight: 600, padding: "8px 18px", borderRadius: 7, border: "1px solid #e0dfda", background: "#fff", cursor: "pointer", color: "#4a4a46" }}>Cancel</button>
+                  <button onClick={handleAdd} disabled={inheritChecked.size === 0} style={{ fontSize: 13, fontWeight: 700, padding: "8px 22px", borderRadius: 7, border: "none", background: inheritChecked.size > 0 ? "#1a1a18" : "#d8d7d2", color: "#fff", cursor: inheritChecked.size > 0 ? "pointer" : "default", transition: "background 120ms ease" }}>Add Quote</button>
+                </div>
+              </div>
+            </div>
+          </>
+        );
+      })(), document.body)}
+
+      {/* Inherit-from slider: Submitted PO/SO */}
+      {inheritSlider === "po-so" && createPortal((() => {
+        const linkedIds = new Set(linkedPos.map(p => p.id));
+        const available = SUBMITTED_POS.filter(p => !linkedIds.has(p.id));
+        const filtered = available.filter(p => {
+          if (inheritTypeFilter && p.type !== inheritTypeFilter) return false;
+          if (inheritStatusFilter && p.status !== inheritStatusFilter) return false;
+          if (!inheritSearch) return true;
+          const s = inheritSearch.toLowerCase();
+          return p.id.toLowerCase().includes(s) || p.title.toLowerCase().includes(s);
+        });
+        const allFilteredIds = filtered.map(p => p.id);
+        const allChecked = allFilteredIds.length > 0 && allFilteredIds.every(id => inheritChecked.has(id));
+        const someChecked = allFilteredIds.some(id => inheritChecked.has(id));
+        const close = () => { setInheritSlider(null); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null); setInheritTypeMenuOpen(false); setInheritStatusMenuOpen(false); };
+        const handleAdd = () => {
+          const toAdd = available.filter(p => inheritChecked.has(p.id));
+          if (toAdd.length === 0) { close(); return; }
+          setLinkedPos(prev => [...prev, ...toAdd]);
+          setParts(prev => {
+            const next = [...prev];
+            toAdd.forEach(po => {
+              po.items.forEach((it, idx) => {
+                next.push({
+                  id: `${po.id}-LI${idx + 1}`,
+                  name: it.name, type: it.type, group: it.group,
+                  qty: it.qty, unit: it.unit, unitCost: it.unitCost, unitPrice: it.unitPrice,
+                  billable: it.billable, description: it.description, sku: it.sku,
+                  notes: null, thumb: it.type === "MAT" ? "shingle" : it.type === "EQ" ? "dumpster" : "truck",
+                  _source: po.type === "PO" ? "po" : "so", _sourceId: po.id, _sourceTitle: po.title, _sourceVendor: po.vendor,
+                  _locked: true,
+                });
+              });
+            });
+            return next;
+          });
+          const hasPO = toAdd.some(p => p.type === "PO");
+          const hasSO = toAdd.some(p => p.type === "SO");
+          const masterMsg = hasPO && hasSO ? "Parts master, vendor price list, and services master updated"
+            : hasPO ? "Parts master and vendor price list updated with received cost"
+            : "Services master updated with received cost";
+          setToast(`Added ${toAdd.length} document${toAdd.length > 1 ? "s" : ""} — ${masterMsg}`);
+          close();
+        };
+        return (
+          <>
+            <div className="overlay-enter sidesheet-overlay" onClick={close} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.2)", zIndex: 100 }} />
+            <div className="sidesheet-enter" style={{ position: "fixed", top: 0, right: 0, bottom: 0, width: 760, background: "#fff", zIndex: 101, boxShadow: "-8px 0 32px rgba(0,0,0,0.1)", display: "flex", flexDirection: "column" }}>
+              {/* Header */}
+              <div style={{ padding: "18px 24px 14px", borderBottom: "1px solid #e8e7e2", display: "flex", alignItems: "flex-start", gap: 12 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: "#1a1a18" }}>Select PO/SO to be added to the Job</div>
+                  <div style={{ fontSize: 12, color: "#8c8b86", marginTop: 4 }}>This will add the Parts and Products from PO and Services from SO line items to the Job.</div>
+                </div>
+                <button onClick={close} aria-label="Close" style={{ background: "none", border: "none", cursor: "pointer", color: "#8c8b86", padding: 4, display: "flex", alignItems: "center", borderRadius: 6 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+              {/* Search + filters */}
+              <div style={{ padding: "12px 24px", borderBottom: "1px solid #f0eeea", background: "#fafaf8", display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                <div style={{ position: "relative", flex: 1, minWidth: 240 }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a3a29c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input type="text" autoFocus placeholder="Search by PO/SO number or title..." value={inheritSearch} onChange={e => setInheritSearch(e.target.value)} style={{ width: "100%", fontSize: 13, padding: "8px 10px 8px 32px", borderRadius: 7, border: "1px solid #e0dfda", background: "#fff", outline: "none" }} />
+                </div>
+                {/* Type filter */}
+                <div style={{ position: "relative" }}>
+                  <button onClick={() => { setInheritTypeMenuOpen(v => !v); setInheritStatusMenuOpen(false); }} style={{ fontSize: 12, fontWeight: 600, padding: "7px 12px", borderRadius: 7, border: "1px solid #e0dfda", background: inheritTypeFilter ? "#1a1a18" : "#fff", cursor: "pointer", color: inheritTypeFilter ? "#fff" : "#4a4a46", display: "flex", alignItems: "center", gap: 6 }}>
+                    Type{inheritTypeFilter ? `: ${inheritTypeFilter}` : ""}
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  {inheritTypeMenuOpen && (
+                    <>
+                      <div onClick={() => setInheritTypeMenuOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 102 }} />
+                      <div className="dropdown-enter" style={{ position: "absolute", right: 0, top: "calc(100% + 4px)", width: 140, background: "#fff", border: "1px solid #e0dfda", borderRadius: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", zIndex: 103, padding: "4px 0" }}>
+                        {[{ v: null, l: "All types" }, { v: "PO", l: "PO" }, { v: "SO", l: "SO" }].map(opt => (
+                          <button key={opt.l} onClick={() => { setInheritTypeFilter(opt.v); setInheritTypeMenuOpen(false); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", border: "none", background: inheritTypeFilter === opt.v ? "#f5f4f0" : "none", cursor: "pointer", fontSize: 12, color: "#1a1a18", textAlign: "left", fontWeight: inheritTypeFilter === opt.v ? 600 : 400 }}>{opt.l}</button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+                {/* Status filter */}
+                <div style={{ position: "relative" }}>
+                  <button onClick={() => { setInheritStatusMenuOpen(v => !v); setInheritTypeMenuOpen(false); }} style={{ fontSize: 12, fontWeight: 600, padding: "7px 12px", borderRadius: 7, border: "1px solid #e0dfda", background: inheritStatusFilter ? "#1a1a18" : "#fff", cursor: "pointer", color: inheritStatusFilter ? "#fff" : "#4a4a46", display: "flex", alignItems: "center", gap: 6 }}>
+                    Status{inheritStatusFilter ? `: ${inheritStatusFilter}` : ""}
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  {inheritStatusMenuOpen && (
+                    <>
+                      <div onClick={() => setInheritStatusMenuOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 102 }} />
+                      <div className="dropdown-enter" style={{ position: "absolute", right: 0, top: "calc(100% + 4px)", width: 160, background: "#fff", border: "1px solid #e0dfda", borderRadius: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", zIndex: 103, padding: "4px 0" }}>
+                        {[{ v: null, l: "All statuses" }, { v: "Submitted", l: "Submitted" }].map(opt => (
+                          <button key={opt.l} onClick={() => { setInheritStatusFilter(opt.v); setInheritStatusMenuOpen(false); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", border: "none", background: inheritStatusFilter === opt.v ? "#f5f4f0" : "none", cursor: "pointer", fontSize: 12, color: "#1a1a18", textAlign: "left", fontWeight: inheritStatusFilter === opt.v ? 600 : 400 }}>{opt.l}</button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+              {/* Table */}
+              <div style={{ flex: 1, overflow: "auto" }}>
+                {filtered.length === 0 ? (
+                  <div style={{ padding: 40, textAlign: "center", color: "#8c8b86", fontSize: 13 }}>
+                    {available.length === 0 ? "All POs/SOs are already linked to this job." : "No PO/SO matches your filters."}
+                  </div>
+                ) : (
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <thead>
+                      <tr style={{ borderBottom: "1px solid #e8e7e2", background: "#fafaf8", position: "sticky", top: 0, zIndex: 1 }}>
+                        <th style={{ padding: "10px 12px 10px 24px", width: 36, textAlign: "left" }}>
+                          <input type="checkbox" checked={allChecked} ref={el => { if (el) el.indeterminate = !allChecked && someChecked; }} onChange={e => { const next = new Set(inheritChecked); if (e.target.checked) allFilteredIds.forEach(id => next.add(id)); else allFilteredIds.forEach(id => next.delete(id)); setInheritChecked(next); }} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
+                        </th>
+                        <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>PO/SO #</th>
+                        <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Type</th>
+                        <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Title</th>
+                        <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Date</th>
+                        <th style={{ padding: "10px 12px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Value</th>
+                        <th style={{ padding: "10px 24px 10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filtered.map(p => {
+                        const checked = inheritChecked.has(p.id);
+                        const toggle = () => setInheritChecked(prev => { const n = new Set(prev); if (n.has(p.id)) n.delete(p.id); else n.add(p.id); return n; });
+                        return (
+                          <tr key={p.id} onClick={toggle} className="picker-row" style={{ cursor: "pointer", borderBottom: "1px solid #f0eeea", background: checked ? "#fafaf8" : "transparent" }}>
+                            <td style={{ padding: "12px 12px 12px 24px" }}>
+                              <input type="checkbox" checked={checked} onChange={toggle} onClick={e => e.stopPropagation()} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
+                            </td>
+                            <td style={{ padding: "12px", fontSize: 13, fontWeight: 600, color: "#1a1a18", ...tn }}>{p.id}</td>
+                            <td style={{ padding: "12px" }}>
+                              <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 5, background: p.type === "PO" ? "#e0e7ff" : "#fef3c7", color: p.type === "PO" ? "#3730a3" : "#92400e" }}>{p.type}</span>
+                            </td>
+                            <td style={{ padding: "12px", fontSize: 13, color: "#1a1a18" }}>
+                              <div style={{ fontWeight: 500 }}>{p.title}</div>
+                              <div style={{ fontSize: 11, color: "#a3a29c", marginTop: 2 }}>{p.vendor} · {p.items.length} line item{p.items.length === 1 ? "" : "s"}</div>
+                            </td>
+                            <td style={{ padding: "12px", fontSize: 12, color: "#6b6a65", ...tn }}>{p.date}</td>
+                            <td style={{ padding: "12px", textAlign: "right", fontSize: 13, fontWeight: 600, color: "#1a1a18", ...tn }}>{$(p.value)}</td>
+                            <td style={{ padding: "12px 24px 12px 12px" }}>
+                              <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 5, background: "#dbeafe", color: "#1e40af" }}>{p.status}</span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+              {/* Footer */}
+              <div style={{ padding: "14px 24px", borderTop: "1px solid #e8e7e2", background: "#fafaf8", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                <span style={{ fontSize: 12, color: "#8c8b86" }}>{inheritChecked.size > 0 ? `${inheritChecked.size} document${inheritChecked.size > 1 ? "s" : ""} selected` : "Select PO/SO to add"}</span>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button onClick={close} style={{ fontSize: 13, fontWeight: 600, padding: "8px 18px", borderRadius: 7, border: "1px solid #e0dfda", background: "#fff", cursor: "pointer", color: "#4a4a46" }}>Cancel</button>
+                  <button onClick={handleAdd} disabled={inheritChecked.size === 0} style={{ fontSize: 13, fontWeight: 700, padding: "8px 22px", borderRadius: 7, border: "none", background: inheritChecked.size > 0 ? "#1a1a18" : "#d8d7d2", color: "#fff", cursor: inheritChecked.size > 0 ? "pointer" : "default", transition: "background 120ms ease" }}>Add PO/SO</button>
+                </div>
+              </div>
+            </div>
+          </>
+        );
+      })(), document.body)}
+
+      {/* Remove confirmation */}
+      {removeConfirm && createPortal(
+        <>
+          <div className="overlay-enter" onClick={() => setRemoveConfirm(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.35)", zIndex: 200 }} />
+          <div className="dropdown-enter" style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 460, background: "#fff", borderRadius: 12, boxShadow: "0 20px 50px rgba(0,0,0,0.2)", zIndex: 201, overflow: "hidden" }}>
+            <div style={{ padding: "20px 22px 14px" }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#1a1a18", marginBottom: 8 }}>{removeConfirm.kind === "quote" ? "Remove Quote(s) from Job?" : removeConfirm.kind === "po" ? "Remove PO/SO from Job?" : "Remove selected from Job?"}</div>
+              <div style={{ fontSize: 13, color: "#4a4a46", lineHeight: 1.5 }}>
+                {removeConfirm.kind === "quote"
+                  ? "Removing this Quote(s) will affect the projected and planned profitability of the Job and deletes quote line items from Job. The original quote shall not be deleted. Do you wish to continue?"
+                  : removeConfirm.kind === "po"
+                  ? "Removing this PO(s)/SO(s) will affect the projected and planned profitability of the Job and deletes PO/SO line items from Job. The original PO/SO shall not be deleted. Do you wish to continue?"
+                  : "Removing the selected items will affect the projected and planned profitability of the Job and deletes their line items from Job. The original Quote/PO/SO shall not be deleted. Do you wish to continue?"}
+              </div>
+            </div>
+            <div style={{ padding: "12px 22px 16px", borderTop: "1px solid #f0eeea", background: "#fafaf8", display: "flex", justifyContent: "flex-end", gap: 8 }}>
+              <button onClick={() => setRemoveConfirm(null)} style={{ fontSize: 13, fontWeight: 600, padding: "7px 16px", borderRadius: 7, border: "1px solid #e0dfda", background: "#fff", cursor: "pointer", color: "#4a4a46" }}>Cancel</button>
+              <button onClick={() => {
+                const ids = new Set(removeConfirm.ids);
+                const quoteIds = new Set(removeConfirm.kind === "quote" ? removeConfirm.ids : (removeConfirm.quoteIds || []));
+                const poIds = new Set(removeConfirm.kind === "po" ? removeConfirm.ids : (removeConfirm.poIds || []));
+                if (quoteIds.size > 0) {
+                  setLinkedQuotes(prev => prev.filter(q => !quoteIds.has(q.id)));
+                  setParts(prev => prev.filter(p => !(p._source === "quote" && quoteIds.has(p._sourceId))));
+                }
+                if (poIds.size > 0) {
+                  setLinkedPos(prev => prev.filter(p => !poIds.has(p.id)));
+                  setParts(prev => prev.filter(p => !((p._source === "po" || p._source === "so") && poIds.has(p._sourceId))));
+                }
+                setSelectedSourceChips(prev => { const n = new Set(prev); ids.forEach(id => n.delete(id)); return n; });
+                setRemoveConfirm(null);
+                setToast(`Removed ${ids.size} item${ids.size > 1 ? "s" : ""} from the Job`);
+              }} style={{ fontSize: 13, fontWeight: 700, padding: "7px 18px", borderRadius: 7, border: "none", background: "#991b1b", color: "#fff", cursor: "pointer" }}>Remove</button>
+            </div>
+          </div>
+        </>,
+        document.body
+      )}
+
+      {/* Toast */}
+      {toast && createPortal(
+        <div className="dropdown-enter" style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "#1a1a18", color: "#fff", padding: "10px 18px", borderRadius: 10, fontSize: 13, fontWeight: 500, boxShadow: "0 10px 30px rgba(0,0,0,0.25)", zIndex: 300, display: "flex", alignItems: "center", gap: 10 }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          {toast}
+          <button onClick={() => setToast(null)} style={{ background: "none", border: "none", color: "#a3a29c", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", marginLeft: 8 }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>,
+        document.body
+      )}
 
     </div>{/* end bordered container */}
     </div>{/* end scrollable content */}
