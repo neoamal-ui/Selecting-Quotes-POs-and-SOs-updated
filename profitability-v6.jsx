@@ -3443,19 +3443,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                           return null;
                         })}
                         {!embedded && <TableCell style={{ padding: "12px 8px", textAlign: "center", position: "relative", verticalAlign: "middle" }}>
-                          <div style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                            {p._source === "quote" && (
-                              <span title={`Added from Quote ${p._sourceId}`} onClick={(e) => { e.stopPropagation(); window.open(`#quote/${p._sourceId}?lineItem=${p.id}`, "_blank"); }} style={{ cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", width: 18, height: 18, borderRadius: 4, background: "#dbeafe", color: "#1e40af" }}>
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                              </span>
-                            )}
-                            {(p._source === "po" || p._source === "so") && (
-                              <span title={`Added from ${p._source.toUpperCase()} ${p._sourceId}`} onClick={(e) => { e.stopPropagation(); window.open(`#${p._source}/${p._sourceId}?lineItem=${p.id}`, "_blank"); }} style={{ cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", width: 18, height: 18, borderRadius: 4, background: p._source === "po" ? "#fef3c7" : "#fee2e2", color: p._source === "po" ? "#854d0e" : "#991b1b" }}>
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-                              </span>
-                            )}
-                            <span className={menuOpen ? undefined : "row-dots"} onClick={(e) => { e.stopPropagation(); setRowMenu(menuOpen ? null : p.id); }} style={{ color: "#c5c4bf", cursor: "pointer", fontSize: 18, lineHeight: 1 }}>⋯</span>
-                          </div>
+                          <span className={menuOpen ? undefined : "row-dots"} onClick={(e) => { e.stopPropagation(); setRowMenu(menuOpen ? null : p.id); }} style={{ color: "#c5c4bf", cursor: "pointer", fontSize: 18, lineHeight: 1 }}>⋯</span>
                           {menuOpen && (
                             <div className="dropdown-enter" style={{ position: "absolute", right: 8, top: "100%", width: 220, background: "#fff", border: "1px solid #e0dfda", borderRadius: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", zIndex: 50 }}>
                               <button onClick={(e) => { e.stopPropagation(); setViewItem(p); setRowMenu(null); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", border: "none", background: "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left" }}>
