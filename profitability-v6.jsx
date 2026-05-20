@@ -2173,6 +2173,14 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
       return sort.dir === "asc" ? g(a) - g(b) : g(b) - g(a);
     }) : searched;
     items.forEach((p) => { if (!map.has(p.group)) map.set(p.group, []); map.get(p.group).push(p); });
+    // Hoist the "Inherited" group to the top so carried-forward items show first
+    if (map.has("Inherited")) {
+      const inherited = map.get("Inherited");
+      const ordered = new Map();
+      ordered.set("Inherited", inherited);
+      for (const [k, v] of map) { if (k !== "Inherited") ordered.set(k, v); }
+      return ordered;
+    }
     return map;
   }, [PARTS, sort, tsLower, tableFilters]);
 
@@ -3205,8 +3213,30 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                     <TableCell colSpan={visibleCols.length + (embedded ? 1 : 2)} style={{ padding: embedded ? "7px 40px" : "4px 14px 4px 14px", background: "#fafaf8" }}>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <span className="group-title" style={{ fontSize: 12, fontWeight: 700, color: "#4a4a46" }}>{gName}</span>
+                          {gName === "Inherited" ? (
+                            <>
+                              <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 7px", borderRadius: 4, background: "#1a1a18", color: "#fff", letterSpacing: "0.04em", textTransform: "uppercase", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                Inherited
+                              </span>
+                              <span className="group-title" style={{ fontSize: 12, fontWeight: 700, color: "#1a1a18" }}>From Quotes &amp; PO/SO</span>
+                            </>
+                          ) : (
+                            <span className="group-title" style={{ fontSize: 12, fontWeight: 700, color: "#4a4a46" }}>{gName}</span>
+                          )}
                           <svg className="group-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#b0afa9" strokeWidth="1.5" strokeLinecap="round" style={{ transform: collapsedGroups.has(gName) ? "rotate(-90deg)" : "rotate(0deg)", transition: "transform 150ms ease", flexShrink: 0 }}><path d="M2 3.5l3 3 3-3"/></svg>
+                          {gName === "Inherited" && (
+                            <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginLeft: 6 }} onClick={e => e.stopPropagation()}>
+                              <button onClick={() => { setInheritSlider("quote"); setInheritSearch(""); setInheritChecked(new Set()); }} className="btn-press" style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 6, border: "1px solid #dbeafe", background: "#eff6ff", color: "#1e40af", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Add Quote
+                              </button>
+                              <button onClick={() => { setInheritSlider("po-so"); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null); }} className="btn-press" style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 6, border: "1px solid #fde68a", background: "#fef3c7", color: "#854d0e", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Add PO/SO
+                              </button>
+                            </div>
+                          )}
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 11, color: "#8c8b86", ...tn, whiteSpace: "nowrap" }}>
                           <span style={{ fontSize: 10, fontWeight: 600, color: "#b0afa9" }}>{items.length} items</span>
@@ -4070,7 +4100,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
               q.items.forEach((it, idx) => {
                 next.push({
                   id: `${q.id}-LI${idx + 1}`,
-                  name: it.name, type: it.type, group: it.group,
+                  name: it.name, type: it.type, group: "Inherited",
                   qty: it.qty, unit: it.unit, unitCost: it.unitCost, unitPrice: it.unitPrice,
                   billable: it.billable, description: it.description, sku: it.sku,
                   notes: null, thumb: it.type === "MAT" ? "shingle" : it.type === "EQ" ? "dumpster" : "permit",
@@ -4195,7 +4225,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
               po.items.forEach((it, idx) => {
                 next.push({
                   id: `${po.id}-LI${idx + 1}`,
-                  name: it.name, type: it.type, group: it.group,
+                  name: it.name, type: it.type, group: "Inherited",
                   qty: it.qty, unit: it.unit, unitCost: it.unitCost, unitPrice: it.unitPrice,
                   billable: it.billable, description: it.description, sku: it.sku,
                   notes: null, thumb: it.type === "MAT" ? "shingle" : it.type === "EQ" ? "dumpster" : "truck",
