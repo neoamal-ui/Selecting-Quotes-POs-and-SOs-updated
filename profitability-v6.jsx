@@ -3031,77 +3031,6 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
             </div>
           </div>}
 
-          {/* Linked Quotes / PO / SO chips */}
-          {!embedded && (linkedQuotes.length > 0 || linkedPos.length > 0) && (
-            <div style={{ padding: "12px 14px", borderBottom: "1px solid #f0eeea", background: "linear-gradient(180deg, #fafaf8 0%, #fff 100%)" }}>
-              {(() => {
-                const allChipIds = [...linkedQuotes.map(q => q.id), ...linkedPos.map(p => p.id)];
-                const allChipChecked = allChipIds.length > 0 && allChipIds.every(id => selectedSourceChips.has(id));
-                const someChipChecked = allChipIds.some(id => selectedSourceChips.has(id));
-                const selQuotes = linkedQuotes.filter(q => selectedSourceChips.has(q.id)).map(q => q.id);
-                const selPos = linkedPos.filter(p => selectedSourceChips.has(p.id)).map(p => p.id);
-                return (
-                  <>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                      <input type="checkbox" checked={allChipChecked} ref={el => { if (el) el.indeterminate = !allChipChecked && someChipChecked; }} onChange={e => setSelectedSourceChips(e.target.checked ? new Set(allChipIds) : new Set())} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18", margin: 0 }} />
-                      <span style={{ fontSize: 11, fontWeight: 700, color: "#6b6a65", textTransform: "uppercase", letterSpacing: "0.06em" }}>Inherited from {linkedQuotes.length > 0 && `${linkedQuotes.length} quote${linkedQuotes.length === 1 ? "" : "s"}`}{linkedQuotes.length > 0 && linkedPos.length > 0 && " · "}{linkedPos.length > 0 && `${linkedPos.length} PO/SO`}</span>
-                      <span style={{ flex: 1 }} />
-                      {selectedSourceChips.size > 0 && (
-                        <button onClick={() => {
-                          if (selPos.length === 0) setRemoveConfirm({ kind: "quote", ids: selQuotes });
-                          else if (selQuotes.length === 0) setRemoveConfirm({ kind: "po", ids: selPos });
-                          else setRemoveConfirm({ kind: "mixed", ids: [...selQuotes, ...selPos], quoteIds: selQuotes, poIds: selPos });
-                        }} style={{ fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 5, border: "1px solid #fecaca", background: "#fff", color: "#991b1b", cursor: "pointer" }}>Remove selected ({selectedSourceChips.size})</button>
-                      )}
-                      <button onClick={() => { setInheritSlider("quote"); setInheritSearch(""); setInheritChecked(new Set()); }} style={{ fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 5, border: "1px solid #e0dfda", background: "#fff", color: "#4a4a46", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                        Add Quote
-                      </button>
-                      <button onClick={() => { setInheritSlider("po-so"); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null); }} style={{ fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 5, border: "1px solid #e0dfda", background: "#fff", color: "#4a4a46", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                        Add PO/SO
-                      </button>
-                    </div>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                      {linkedQuotes.map(q => {
-                        const sel = selectedSourceChips.has(q.id);
-                        const toggle = () => setSelectedSourceChips(prev => { const n = new Set(prev); if (n.has(q.id)) n.delete(q.id); else n.add(q.id); return n; });
-                        return (
-                          <div key={q.id} className="btn-press" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 8px 5px 6px", borderRadius: 7, border: `1px solid ${sel ? "#1a1a18" : "#dbeafe"}`, background: sel ? "#1a1a18" : "#eff6ff", color: sel ? "#fff" : "#1e3a8a", cursor: "pointer", transition: "all 120ms ease" }} onClick={toggle}>
-                            <input type="checkbox" checked={sel} onChange={toggle} onClick={e => e.stopPropagation()} style={{ width: 12, height: 12, cursor: "pointer", accentColor: sel ? "#fff" : "#1a1a18", margin: 0 }} />
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                            <span style={{ fontSize: 11, fontWeight: 700, ...tn }}>{q.id}</span>
-                            <span style={{ fontSize: 11, fontWeight: 500, opacity: 0.85, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 140 }}>{q.title}</span>
-                            <span style={{ fontSize: 11, fontWeight: 600, ...tn, opacity: 0.75 }}>{$(q.value)}</span>
-                            <button onClick={e => { e.stopPropagation(); setRemoveConfirm({ kind: "quote", ids: [q.id] }); }} aria-label="Remove" style={{ background: "none", border: "none", cursor: "pointer", color: sel ? "#fff" : "#6b6a65", padding: 0, display: "flex", alignItems: "center", marginLeft: 2 }}>
-                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                            </button>
-                          </div>
-                        );
-                      })}
-                      {linkedPos.map(p => {
-                        const sel = selectedSourceChips.has(p.id);
-                        const toggle = () => setSelectedSourceChips(prev => { const n = new Set(prev); if (n.has(p.id)) n.delete(p.id); else n.add(p.id); return n; });
-                        const isPO = p.type === "PO";
-                        return (
-                          <div key={p.id} className="btn-press" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 8px 5px 6px", borderRadius: 7, border: `1px solid ${sel ? "#1a1a18" : isPO ? "#fde68a" : "#fecaca"}`, background: sel ? "#1a1a18" : isPO ? "#fef3c7" : "#fee2e2", color: sel ? "#fff" : isPO ? "#854d0e" : "#991b1b", cursor: "pointer", transition: "all 120ms ease" }} onClick={toggle}>
-                            <input type="checkbox" checked={sel} onChange={toggle} onClick={e => e.stopPropagation()} style={{ width: 12, height: 12, cursor: "pointer", accentColor: sel ? "#fff" : "#1a1a18", margin: 0 }} />
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-                            <span style={{ fontSize: 11, fontWeight: 700, ...tn }}>{p.id}</span>
-                            <span style={{ fontSize: 11, fontWeight: 500, opacity: 0.85, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 140 }}>{p.title}</span>
-                            <span style={{ fontSize: 11, fontWeight: 600, ...tn, opacity: 0.75 }}>{$(p.value)}</span>
-                            <button onClick={e => { e.stopPropagation(); setRemoveConfirm({ kind: "po", ids: [p.id] }); }} aria-label="Remove" style={{ background: "none", border: "none", cursor: "pointer", color: sel ? "#fff" : "#6b6a65", padding: 0, display: "flex", alignItems: "center", marginLeft: 2 }}>
-                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                            </button>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </>
-                );
-              })()}
-            </div>
-          )}
 
           <Table style={{ tableLayout: "fixed", width: "100%" }}>
             <colgroup>
@@ -3276,23 +3205,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                     <TableCell colSpan={visibleCols.length + (embedded ? 1 : 2)} style={{ padding: embedded ? "7px 40px" : "4px 14px 4px 14px", background: "#fafaf8" }}>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          {(() => {
-                            const inheritedKind = gName.startsWith("Quote ") ? "quote" : gName.startsWith("PO ") ? "po" : gName.startsWith("SO ") ? "so" : null;
-                            if (inheritedKind) {
-                              const badgeBg = inheritedKind === "quote" ? "#dbeafe" : inheritedKind === "po" ? "#fef3c7" : "#fee2e2";
-                              const badgeFg = inheritedKind === "quote" ? "#1e40af" : inheritedKind === "po" ? "#854d0e" : "#991b1b";
-                              return (
-                                <>
-                                  <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 7px", borderRadius: 4, background: badgeBg, color: badgeFg, letterSpacing: "0.04em", textTransform: "uppercase", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                    Inherited · {inheritedKind === "quote" ? "Quote" : inheritedKind.toUpperCase()}
-                                  </span>
-                                  <span className="group-title" style={{ fontSize: 12, fontWeight: 700, color: "#1a1a18" }}>{gName}</span>
-                                </>
-                              );
-                            }
-                            return <span className="group-title" style={{ fontSize: 12, fontWeight: 700, color: "#4a4a46" }}>{gName}</span>;
-                          })()}
+                          <span className="group-title" style={{ fontSize: 12, fontWeight: 700, color: "#4a4a46" }}>{gName}</span>
                           <svg className="group-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#b0afa9" strokeWidth="1.5" strokeLinecap="round" style={{ transform: collapsedGroups.has(gName) ? "rotate(-90deg)" : "rotate(0deg)", transition: "transform 150ms ease", flexShrink: 0 }}><path d="M2 3.5l3 3 3-3"/></svg>
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 11, color: "#8c8b86", ...tn, whiteSpace: "nowrap" }}>
@@ -4154,11 +4067,10 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
           setParts(prev => {
             const next = [...prev];
             toAdd.forEach(q => {
-              const groupName = `Quote ${q.id} — ${q.title}`;
               q.items.forEach((it, idx) => {
                 next.push({
                   id: `${q.id}-LI${idx + 1}`,
-                  name: it.name, type: it.type, group: groupName,
+                  name: it.name, type: it.type, group: it.group,
                   qty: it.qty, unit: it.unit, unitCost: it.unitCost, unitPrice: it.unitPrice,
                   billable: it.billable, description: it.description, sku: it.sku,
                   notes: null, thumb: it.type === "MAT" ? "shingle" : it.type === "EQ" ? "dumpster" : "permit",
@@ -4280,11 +4192,10 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
           setParts(prev => {
             const next = [...prev];
             toAdd.forEach(po => {
-              const groupName = `${po.type} ${po.id} — ${po.title}`;
               po.items.forEach((it, idx) => {
                 next.push({
                   id: `${po.id}-LI${idx + 1}`,
-                  name: it.name, type: it.type, group: groupName,
+                  name: it.name, type: it.type, group: it.group,
                   qty: it.qty, unit: it.unit, unitCost: it.unitCost, unitPrice: it.unitPrice,
                   billable: it.billable, description: it.description, sku: it.sku,
                   notes: null, thumb: it.type === "MAT" ? "shingle" : it.type === "EQ" ? "dumpster" : "truck",
