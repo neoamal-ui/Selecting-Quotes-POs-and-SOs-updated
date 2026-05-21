@@ -3012,16 +3012,16 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                   <div className="dropdown-enter" style={{ position: "absolute", right: "calc(100% + 4px)", top: 122, width: 240, background: "#fff", border: "1px solid #e0dfda", borderRadius: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04)", zIndex: 21, padding: "4px 0", transformOrigin: "top right" }}>
                     <div style={{ padding: "6px 14px 8px", fontSize: 11, fontWeight: 600, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Add line items from</div>
                     <button onClick={() => { setInheritSlider("quote"); setInheritSearch(""); setInheritChecked(new Set()); setShowInheritMenu(false); setShowMenu(false); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", border: "none", background: "none", cursor: "pointer", textAlign: "left", fontSize: 13, color: "#1a1a18" }}>
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 500 }}>Add Accepted Quotes</div>
+                        <div style={{ fontSize: 13, fontWeight: 500 }}>Accepted Quotes</div>
                         <div style={{ fontSize: 11, color: "#a3a29c", marginTop: 1 }}>Parts & services from quotes</div>
                       </div>
                     </button>
                     <button onClick={() => { setInheritSlider("po-so"); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null); setShowInheritMenu(false); setShowMenu(false); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", border: "none", background: "none", cursor: "pointer", textAlign: "left", fontSize: 13, color: "#1a1a18" }}>
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/></svg>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 500 }}>Add Submitted PO/SO's</div>
+                        <div style={{ fontSize: 13, fontWeight: 500 }}>Submitted PO/SO's</div>
                         <div style={{ fontSize: 11, color: "#a3a29c", marginTop: 1 }}>Parts from PO, services from SO</div>
                       </div>
                     </button>
