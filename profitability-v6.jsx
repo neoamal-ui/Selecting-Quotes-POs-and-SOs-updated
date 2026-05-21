@@ -4447,9 +4447,8 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
 
       {/* Remove confirmation */}
       {removeConfirm && createPortal(
-        <>
-          <div className="overlay-enter" onClick={() => setRemoveConfirm(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.35)", zIndex: 200 }} />
-          <div className="dropdown-enter" style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 460, background: "#fff", borderRadius: 12, boxShadow: "0 20px 50px rgba(0,0,0,0.2)", zIndex: 201, overflow: "hidden" }}>
+        <div className="overlay-enter" onClick={() => setRemoveConfirm(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.35)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+          <div className="dropdown-enter" onClick={e => e.stopPropagation()} style={{ width: 460, maxWidth: "100%", background: "#fff", borderRadius: 12, boxShadow: "0 20px 50px rgba(0,0,0,0.2)", overflow: "hidden" }}>
             <div style={{ padding: "20px 22px 14px" }}>
               <div style={{ fontSize: 15, fontWeight: 700, color: "#1a1a18", marginBottom: 8 }}>{removeConfirm.kind === "quote" ? "Remove Quote(s) from Job?" : removeConfirm.kind === "po" ? "Remove PO/SO from Job?" : "Remove selected from Job?"}</div>
               <div style={{ fontSize: 13, color: "#4a4a46", lineHeight: 1.5 }}>
@@ -4480,7 +4479,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
               }} style={{ fontSize: 13, fontWeight: 700, padding: "7px 18px", borderRadius: 7, border: "none", background: "#991b1b", color: "#fff", cursor: "pointer" }}>Remove</button>
             </div>
           </div>
-        </>,
+        </div>,
         document.body
       )}
 
