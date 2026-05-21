@@ -3349,10 +3349,10 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                     const menuOpen = rowMenu === p.id;
                     const pSerial = String(++_serialCtr).padStart(3, "0");
                     return (
-                      <TableRow key={p.id} draggable={!embedded && !p._locked} onClick={embedded ? () => setViewItem(p) : undefined} onKeyDown={embedded ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setViewItem(p); } } : undefined} tabIndex={embedded ? 0 : undefined} aria-label={embedded ? `View details for ${p.name}` : undefined} onDragStart={!embedded && !p._locked ? () => handleDragStart(p.id) : undefined} onDragOver={!embedded ? (e) => handleDragOver(e, p.id) : undefined} onDrop={!embedded ? () => handleDrop(p.id) : undefined} onDragEnd={!embedded ? () => { setDragItem(null); setDragOverItem(null); } : undefined} data-selected={!embedded && selected.has(p.id) || undefined} style={{ cursor: embedded ? "pointer" : undefined, opacity: dragItem === p.id ? 0.4 : 1, borderTop: dragOverItem === p.id && dragItem !== p.id ? "2px solid #3b82f6" : undefined }}>
+                      <TableRow key={p.id} draggable={!embedded && !(p._source === "quote")} onClick={embedded ? () => setViewItem(p) : undefined} onKeyDown={embedded ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setViewItem(p); } } : undefined} tabIndex={embedded ? 0 : undefined} aria-label={embedded ? `View details for ${p.name}` : undefined} onDragStart={!embedded && !(p._source === "quote") ? () => handleDragStart(p.id) : undefined} onDragOver={!embedded ? (e) => handleDragOver(e, p.id) : undefined} onDrop={!embedded ? () => handleDrop(p.id) : undefined} onDragEnd={!embedded ? () => { setDragItem(null); setDragOverItem(null); } : undefined} data-selected={!embedded && selected.has(p.id) || undefined} style={{ cursor: embedded ? "pointer" : undefined, opacity: dragItem === p.id ? 0.4 : 1, borderTop: dragOverItem === p.id && dragItem !== p.id ? "2px solid #3b82f6" : undefined }}>
                         {!embedded && <TableCell style={{ padding: "0 4px 0 6px", textAlign: "center", verticalAlign: "middle" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                            <span className="drag-handle" style={{ cursor: p._locked ? "default" : "grab", color: "#d0cfca", display: "flex", alignItems: "center", padding: "2px 0" }} onMouseDown={e => { if (!p._locked) e.currentTarget.closest("tr").draggable = true; }}>
+                            <span className="drag-handle" style={{ cursor: (p._source === "quote") ? "default" : "grab", color: "#d0cfca", display: "flex", alignItems: "center", padding: "2px 0" }} onMouseDown={e => { if (!(p._source === "quote")) e.currentTarget.closest("tr").draggable = true; }}>
                               <svg width="8" height="14" viewBox="0 0 8 14" fill="currentColor"><circle cx="2" cy="2" r="1.2"/><circle cx="6" cy="2" r="1.2"/><circle cx="2" cy="7" r="1.2"/><circle cx="6" cy="7" r="1.2"/><circle cx="2" cy="12" r="1.2"/><circle cx="6" cy="12" r="1.2"/></svg>
                             </span>
                             <span className="row-serial" style={{ fontSize: 11, fontWeight: 600, color: "#b0afa9", fontVariantNumeric: "tabular-nums", letterSpacing: "0.02em", flex: 1, textAlign: "center" }}>{pSerial}</span>
@@ -3438,11 +3438,11 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M20.188 10.934c.388.472.582.707.582 1.066s-.194.594-.582 1.066C18.768 14.79 15.636 18 12 18c-3.636 0-6.768-3.21-8.188-4.934C3.424 12.594 3.23 12.36 3.23 12s.194-.594.582-1.066C5.232 9.21 8.364 6 12 6c3.636 0 6.768 3.21 8.188 4.934z"/></svg>
                                 View item details
                               </button>
-                              {(p._locked || p._source === "quote") ? (
+                              {p._source === "quote" ? (
                                 <>
                                   <div style={{ height: 1, background: "#f0eeea", margin: "2px 0" }} />
                                   <div style={{ padding: "10px 14px", fontSize: 11, color: "#8c8b86", lineHeight: 1.45, background: "#fafaf8" }}>
-                                    Editing locked — line item inherited from {p._source === "quote" ? "Quote" : p._source === "po" ? "PO" : "SO"} <strong style={{ ...tn, color: "#4a4a46" }}>{p._sourceId}</strong>. Remove the {p._source === "quote" ? "Quote" : p._source === "po" ? "PO" : "SO"} link to edit.
+                                    Editing locked — line item inherited from Quote <strong style={{ ...tn, color: "#4a4a46" }}>{p._sourceId}</strong>. Remove the Quote link to edit.
                                   </div>
                                 </>
                               ) : (
@@ -4196,7 +4196,6 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                   billable: it.billable, description: it.description, sku: it.sku,
                   notes: null, thumb: it.type === "MAT" ? "shingle" : it.type === "EQ" ? "dumpster" : "truck",
                   _source: po.type === "PO" ? "po" : "so", _sourceId: po.id, _sourceTitle: po.title, _sourceVendor: po.vendor,
-                  _locked: true,
                 });
               });
             });
