@@ -4225,7 +4225,16 @@ function AssociationsPanel() {
                     <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.title}</div>
                     <div style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>{p.vendor} · ${p.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                   </div>
-                  <span style={{ padding: '2px 7px', borderRadius: 4, fontSize: 10, fontWeight: 600, color: '#1e40af', background: '#dbeafe', flexShrink: 0 }}>{p.status}</span>
+                  {(() => {
+                    const s = p.status;
+                    const palette = s === "Draft" ? { bg: "#f3f4f6", fg: "#6b7280" }
+                      : s === "Submitted" ? { bg: "#dbeafe", fg: "#1e40af" }
+                      : s === "Approved" ? { bg: "#dcfce7", fg: "#166534" }
+                      : s === "Received" ? { bg: "#e0e7ff", fg: "#3730a3" }
+                      : s === "Closed" ? { bg: "#e5e5e5", fg: "#4a4a46" }
+                      : { bg: "#fef3c7", fg: "#854d0e" };
+                    return <span style={{ padding: '2px 7px', borderRadius: 4, fontSize: 10, fontWeight: 600, color: palette.fg, background: palette.bg, flexShrink: 0 }}>{s}</span>;
+                  })()}
                 </div>
               ))}
             </div>

@@ -183,7 +183,7 @@ const ACCEPTED_QUOTES = [
   },
 ];
 
-// Submitted POs available to inherit from (active, not cancelled/archived, not associated to other jobs)
+// POs/SOs available to inherit from — all statuses are eligible (the filter lets the user narrow)
 const SUBMITTED_POS = [
   {
     id: "PO-3041", type: "PO", title: "Roofing materials — GAF supplier", date: "Oct 12, 2024", value: 4275, status: "Submitted", vendor: "ABC Building Supply",
@@ -194,11 +194,24 @@ const SUBMITTED_POS = [
     ],
   },
   {
-    id: "PO-3055", type: "PO", title: "Flashing & trim restock", date: "Oct 16, 2024", value: 1180, status: "Submitted", vendor: "Metro Roofing Supply",
+    id: "PO-3055", type: "PO", title: "Flashing & trim restock", date: "Oct 16, 2024", value: 1180, status: "Approved", vendor: "Metro Roofing Supply",
     items: [
       { name: "Drip edge — aluminum, white", type: "MAT", group: "Flashing & trim", qty: 24, unit: "pc", unitCost: 8.25, unitPrice: 30, billable: true, description: "Type D aluminum drip edge", sku: "FL-DRIP-WH" },
       { name: "Step flashing — 4×4 galv", type: "MAT", group: "Flashing & trim", qty: 50, unit: "pc", unitCost: 1.65, unitPrice: 7.5, billable: true, description: "Pre-bent galvanized step flashing", sku: "FL-STEP-4G" },
       { name: "Chimney flashing kit — lead/alum", type: "MAT", group: "Flashing & trim", qty: 1, unit: "kit", unitCost: 178, unitPrice: 775, billable: true, description: "Two-piece chimney flashing kit", sku: "FL-CHIM-KIT" },
+    ],
+  },
+  {
+    id: "PO-3062", type: "PO", title: "Gutter coil & downspouts", date: "Oct 21, 2024", value: 980, status: "Received", vendor: "Coastal Metals",
+    items: [
+      { name: "Gutter coil — 5 in aluminum", type: "MAT", group: "Gutters & drainage", qty: 200, unit: "ft", unitCost: 4.20, unitPrice: 14, billable: true, description: "Aluminum gutter coil stock", sku: "GT-COIL-5AL" },
+      { name: "Downspout — 2×3 aluminum", type: "MAT", group: "Gutters & drainage", qty: 6, unit: "pc", unitCost: 11.50, unitPrice: 38, billable: true, description: "Pre-cut downspout", sku: "GT-DS-23AL" },
+    ],
+  },
+  {
+    id: "PO-3070", type: "PO", title: "Ventilation hardware", date: "Oct 24, 2024", value: 620, status: "Draft", vendor: "Northgate HVAC",
+    items: [
+      { name: "Ridge vent — shingle-over, 4 ft", type: "MAT", group: "Ventilation", qty: 10, unit: "pc", unitCost: 17.50, unitPrice: 65, billable: true, description: "Low-profile shingle-over ridge vent", sku: "VN-RIDGE-4" },
     ],
   },
   {
@@ -209,12 +222,25 @@ const SUBMITTED_POS = [
     ],
   },
   {
-    id: "SO-4025", type: "SO", title: "Chimney mason subcontractor", date: "Oct 17, 2024", value: 1450, status: "Submitted", vendor: "Hearth & Stone Masonry",
+    id: "SO-4025", type: "SO", title: "Chimney mason subcontractor", date: "Oct 17, 2024", value: 1450, status: "Approved", vendor: "Hearth & Stone Masonry",
     items: [
       { name: "Chimney cricket rebuild — labor", type: "SVC", group: "Flashing & trim", qty: 1, unit: "lot", unitCost: 720, unitPrice: 1450, billable: true, description: "Subcontracted mason for cricket rebuild and reflashing", sku: "SVC-CHIM-MSN" },
     ],
   },
+  {
+    id: "SO-4031", type: "SO", title: "Inspection & permit liaison", date: "Oct 20, 2024", value: 480, status: "Closed", vendor: "PermitPro Services",
+    items: [
+      { name: "Permit pull & inspection coordination", type: "SVC", group: "Misc & inspection", qty: 1, unit: "lot", unitCost: 280, unitPrice: 480, billable: true, description: "Third-party permit & inspection liaison", sku: "SVC-PERMIT-LZ" },
+    ],
+  },
+  {
+    id: "SO-4040", type: "SO", title: "Gutter install subcontractor", date: "Oct 23, 2024", value: 1120, status: "Draft", vendor: "Northgate Gutters",
+    items: [
+      { name: "Gutter installation labor", type: "SVC", group: "Gutters & drainage", qty: 1, unit: "lot", unitCost: 540, unitPrice: 1120, billable: true, description: "Subcontracted crew for gutter install", sku: "SVC-GT-INST" },
+    ],
+  },
 ];
+const PO_SO_STATUSES = ["Draft", "Submitted", "Approved", "Received", "Closed"];
 const SUBMITTED_SOS = SUBMITTED_POS.filter(p => p.type === "SO");
 const PRICELISTS = [
   { id: "default", name: "Standard pricing" },
@@ -3002,7 +3028,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                   </div>
                 )}
                 <button onClick={() => { setShowInheritMenu(v => !v); setShowPricelistMenu(false); setShowFinancingMenu(false); setShowDiscountMenu(false); setShowColConfig(false); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", border: "none", background: showInheritMenu ? "#f5f4f0" : "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left", overflow: "hidden" }}>
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                   <span style={{ fontWeight: 400, whiteSpace: "nowrap" }}>Inherit from</span>
                   <span style={{ flex: 1 }} />
                   <svg width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="#8c8b86" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M3 1l3 3-3 3"/></svg>
@@ -3020,7 +3046,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                     <button onClick={() => { setInheritSlider("po-so"); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null); setShowInheritMenu(false); setShowMenu(false); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", border: "none", background: "none", cursor: "pointer", textAlign: "left", fontSize: 13, color: "#1a1a18" }}>
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/></svg>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 500 }}>Submitted PO/SO's</div>
+                        <div style={{ fontSize: 13, fontWeight: 500 }}>PO/SO's</div>
                         <div style={{ fontSize: 11, color: "#a3a29c", marginTop: 1 }}>Parts from PO, services from SO</div>
                       </div>
                     </button>
@@ -4255,7 +4281,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                     <>
                       <div onClick={() => setInheritStatusMenuOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 102 }} />
                       <div className="dropdown-enter" style={{ position: "absolute", right: 0, top: "calc(100% + 4px)", width: 160, background: "#fff", border: "1px solid #e0dfda", borderRadius: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", zIndex: 103, padding: "4px 0" }}>
-                        {[{ v: null, l: "All statuses" }, { v: "Submitted", l: "Submitted" }].map(opt => (
+                        {[{ v: null, l: "All statuses" }, ...PO_SO_STATUSES.map(s => ({ v: s, l: s }))].map(opt => (
                           <button key={opt.l} onClick={() => { setInheritStatusFilter(opt.v); setInheritStatusMenuOpen(false); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", border: "none", background: inheritStatusFilter === opt.v ? "#f5f4f0" : "none", cursor: "pointer", fontSize: 12, color: "#1a1a18", textAlign: "left", fontWeight: inheritStatusFilter === opt.v ? 600 : 400 }}>{opt.l}</button>
                         ))}
                       </div>
@@ -4304,7 +4330,16 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                             <td style={{ padding: "12px", fontSize: 12, color: "#6b6a65", ...tn }}>{p.date}</td>
                             <td style={{ padding: "12px", textAlign: "right", fontSize: 13, fontWeight: 600, color: "#1a1a18", ...tn }}>{$(p.value)}</td>
                             <td style={{ padding: "12px 24px 12px 12px" }}>
-                              <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 5, background: "#dbeafe", color: "#1e40af" }}>{p.status}</span>
+                              {(() => {
+                                const s = p.status;
+                                const palette = s === "Draft" ? { bg: "#f3f4f6", fg: "#6b7280" }
+                                  : s === "Submitted" ? { bg: "#dbeafe", fg: "#1e40af" }
+                                  : s === "Approved" ? { bg: "#dcfce7", fg: "#166534" }
+                                  : s === "Received" ? { bg: "#e0e7ff", fg: "#3730a3" }
+                                  : s === "Closed" ? { bg: "#e5e5e5", fg: "#4a4a46" }
+                                  : { bg: "#fef3c7", fg: "#854d0e" };
+                                return <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 5, background: palette.bg, color: palette.fg }}>{s}</span>;
+                              })()}
                             </td>
                           </tr>
                         );
