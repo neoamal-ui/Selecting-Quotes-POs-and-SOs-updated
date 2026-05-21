@@ -1,6 +1,6 @@
 import React, { useState, useMemo, forwardRef, useRef, useEffect, Fragment, useContext } from "react";
 import { createPortal } from "react-dom";
-import { DevFlagsContext } from "./Shell.jsx";
+import { DevFlagsContext, InheritanceContext } from "./Shell.jsx";
 
 const Table = forwardRef(({ style, ...props }, ref) => (
   <table ref={ref} style={{ captionSide: "bottom", fontSize: 14, ...style }} {...props} />
@@ -1931,8 +1931,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
   const [inheritStatusFilter, setInheritStatusFilter] = useState(null); // "Submitted" | null
   const [inheritTypeMenuOpen, setInheritTypeMenuOpen] = useState(false);
   const [inheritStatusMenuOpen, setInheritStatusMenuOpen] = useState(false);
-  const [linkedQuotes, setLinkedQuotes] = useState([]); // [{id,title,date,value,status,items}]
-  const [linkedPos, setLinkedPos] = useState([]); // [{id,type,title,date,value,status,vendor,items}]
+  const { linkedQuotes, linkedPos, setLinkedQuotes, setLinkedPos } = useContext(InheritanceContext);
   const [selectedSourceChips, setSelectedSourceChips] = useState(new Set()); // ids selected for bulk remove
   const [removeConfirm, setRemoveConfirm] = useState(null); // { kind: "quote"|"po", ids: [...] }
   const [toast, setToast] = useState(null); // string

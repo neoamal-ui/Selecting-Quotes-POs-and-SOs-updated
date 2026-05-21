@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import App, { ALL_PARTS } from "./profitability-v6.jsx";
 
 export const DevFlagsContext = createContext({ hideDescription: false });
+export const InheritanceContext = createContext({ linkedQuotes: [], linkedPos: [], setLinkedQuotes: () => {}, setLinkedPos: () => {} });
 
 /* ─── SVG Icons ─── */
 const ChevronRight = ({ size = 16, color = "currentColor" }) => (
@@ -3911,7 +3912,26 @@ function ProposalPage({ onBack, proposal }) {
 
 function QuotesInvoicesTab({ onOpenQuote, onNewQuote }) {
   const [filter, setFilter] = useState('all');
-  const quotes = QUOTES_DATA;
+  const { linkedQuotes } = useContext(InheritanceContext);
+  // Build pseudo QUOTES_DATA entries for inherited quotes (mark with _inheritedLink so the row renders the link icon)
+  const inheritedAsQuotes = linkedQuotes.map(q => ({
+    id: q.id,
+    title: q.title,
+    customer: 'Telnet Industries',
+    date: q.date,
+    rawDate: q.date,
+    validUntil: '—',
+    rawValidUntil: '—',
+    amount: '$' + q.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+    status: q.status,
+    statusBg: '#dcfce7',
+    statusColor: '#16a34a',
+    type: 'quote',
+    _inheritedLink: true,
+  }));
+  // Avoid duplicates if the inherited id already exists in QUOTES_DATA
+  const existingIds = new Set(QUOTES_DATA.map(q => q.id));
+  const quotes = [...inheritedAsQuotes.filter(q => !existingIds.has(q.id)), ...QUOTES_DATA];
 
   const filtered = filter === 'all' ? quotes : quotes.filter(q => q.type === filter);
   const counts = { all: quotes.length, quote: quotes.filter(q => q.type === 'quote').length, proposal: quotes.filter(q => q.type === 'proposal').length, invoice: quotes.filter(q => q.type === 'invoice').length };
@@ -3938,7 +3958,7 @@ function QuotesInvoicesTab({ onOpenQuote, onNewQuote }) {
       {/* Cards */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 10 }}>
         {filtered.map(q => (
-          <div key={q.id} onClick={() => onOpenQuote(q)} style={{ border: '1px solid #e5e5e5', borderRadius: 12, padding: '14px 18px', background: '#fff', cursor: 'pointer', transition: 'all 150ms ease', display: 'flex', alignItems: 'center', gap: 16 }}
+          <div key={q.id} onClick={() => { if (q._inheritedLink) return; onOpenQuote(q); }} style={{ border: '1px solid #e5e5e5', borderRadius: 12, padding: '14px 18px', background: '#fff', cursor: q._inheritedLink ? 'default' : 'pointer', transition: 'all 150ms ease', display: 'flex', alignItems: 'center', gap: 16 }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = '#d0cdc6'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = '#e5e5e5'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}>
             {/* Icon */}
@@ -3956,6 +3976,12 @@ function QuotesInvoicesTab({ onOpenQuote, onNewQuote }) {
                 )}
                 <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{q.title}</span>
                 <span style={{ fontSize: 11, color: '#a3a3a3' }}>{q.id}</span>
+                {q._inheritedLink && (
+                  <span title="Linked to this job via Inherit from menu" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 7px', borderRadius: 5, background: '#dbeafe', color: '#1e40af', fontSize: 10, fontWeight: 700, letterSpacing: '0.04em' }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    Linked
+                  </span>
+                )}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#6b7280' }}><CalendarIcon size={11} /> {q.date}</span>
@@ -4129,6 +4155,7 @@ const CommentBadgeIcon = ({ size = 12, color = '#9ca3af' }) => (
 function AssociationsPanel() {
   const [open, setOpen] = useState({ org: true, customer: true, job: true, materials: true, purchaseOrders: true, contract: true, workflow: true });
   const toggle = k => setOpen(p => ({ ...p, [k]: !p[k] }));
+  const { linkedPos } = useContext(InheritanceContext);
 
   const SquareAvatar = ({ letter, size = 28 }) => (
     <div style={{ width: size, height: size, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontWeight: 600, background: '#f3f4f6', color: '#6b7280', fontSize: 12 }}>{letter}</div>
@@ -4181,7 +4208,31 @@ function AssociationsPanel() {
           <AssocEmpty text="No Material Requests" />
         </AssocSection>
         <AssocSection title="Purchase Orders" open={open.purchaseOrders} onToggle={() => toggle('purchaseOrders')}>
-          <AssocEmpty text="No Purchase Orders" />
+          {linkedPos.length === 0 ? (
+            <AssocEmpty text="No Purchase Orders" />
+          ) : (
+            <div style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {linkedPos.map(p => (
+                <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: p.type === 'PO' ? '#fef3c7' : '#fee2e2', color: p.type === 'PO' ? '#854d0e' : '#991b1b' }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/></svg>
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ fontSize: 13, fontWeight: 500, color: '#262626' }}>{p.id}</span>
+                      <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3, background: p.type === 'PO' ? '#fef3c7' : '#fee2e2', color: p.type === 'PO' ? '#854d0e' : '#991b1b', letterSpacing: '0.04em' }}>{p.type}</span>
+                      <span title="Linked to this job via Inherit from menu" style={{ display: 'inline-flex', alignItems: 'center', color: '#1e40af' }}>
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                      </span>
+                    </div>
+                    <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.title}</div>
+                    <div style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>{p.vendor} · ${p.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                  </div>
+                  <span style={{ padding: '2px 7px', borderRadius: 4, fontSize: 10, fontWeight: 600, color: '#1e40af', background: '#dbeafe', flexShrink: 0 }}>{p.status}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </AssocSection>
         <AssocSection title="Contract" open={open.contract} onToggle={() => toggle('contract')}>
           <AssocEmpty text="No Contract Associated" />
@@ -4413,6 +4464,9 @@ export default function Shell() {
   const [quotePage, setQuotePage] = useState(() => parseHash());
   const [devFlags, setDevFlags] = useState({ hideDescription: false });
   const toggleDevFlag = id => setDevFlags(p => ({ ...p, [id]: !p[id] }));
+  const [linkedQuotes, setLinkedQuotes] = useState([]);
+  const [linkedPos, setLinkedPos] = useState([]);
+  const inheritanceValue = useMemo(() => ({ linkedQuotes, linkedPos, setLinkedQuotes, setLinkedPos }), [linkedQuotes, linkedPos]);
 
   const skipHashSync = useRef(false);
 
@@ -4443,6 +4497,7 @@ export default function Shell() {
 
   return (
     <DevFlagsContext.Provider value={providerValue}>
+    <InheritanceContext.Provider value={inheritanceValue}>
       <div style={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden", background: "#f8f5f0" }}>
         <TopNavBar />
         <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
@@ -4480,6 +4535,7 @@ export default function Shell() {
           </div>
         </div>
       </div>
+    </InheritanceContext.Provider>
     </DevFlagsContext.Provider>
   );
 }
