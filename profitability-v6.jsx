@@ -3466,8 +3466,12 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                               {p._source === "quote" ? (
                                 <>
                                   <div style={{ height: 1, background: "#f0eeea", margin: "2px 0" }} />
-                                  <div style={{ padding: "10px 14px", fontSize: 11, color: "#8c8b86", lineHeight: 1.45, background: "#fafaf8" }}>
-                                    Editing locked — line item inherited from Quote <strong style={{ ...tn, color: "#4a4a46" }}>{p._sourceId}</strong>. Remove the Quote link to edit.
+                                  <div aria-disabled="true" title="Editing locked — inherited from Quote" style={{ width: "100%", display: "flex", alignItems: "flex-start", gap: 8, padding: "10px 14px", border: "none", background: "none", cursor: "not-allowed", textAlign: "left", opacity: 0.55 }}>
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                      <div style={{ fontSize: 13, color: "#8c8b86", fontWeight: 500 }}>Edit item</div>
+                                      <div style={{ fontSize: 11, color: "#a3a29c", marginTop: 2, lineHeight: 1.4 }}>line item inherited from Quote <strong style={{ ...tn, color: "#6b6a65" }}>{p._sourceId}</strong>. Remove the Quote link to edit.</div>
+                                    </div>
                                   </div>
                                 </>
                               ) : (
