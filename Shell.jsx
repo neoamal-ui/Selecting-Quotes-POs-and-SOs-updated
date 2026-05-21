@@ -4211,9 +4211,9 @@ function AssociationsPanel() {
           {linkedPos.length === 0 ? (
             <AssocEmpty text="No Purchase Orders" />
           ) : (
-            <div style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {linkedPos.map(p => (
-                <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: 0, display: 'flex', flexDirection: 'column' }}>
+              {linkedPos.map((p, i) => (
+                <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px', borderTop: i === 0 ? 'none' : '1px solid #e5e7eb' }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       <span style={{ fontSize: 13, fontWeight: 500, color: '#262626' }}>{p.id}</span>
