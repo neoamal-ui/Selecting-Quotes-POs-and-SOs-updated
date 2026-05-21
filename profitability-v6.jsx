@@ -2969,7 +2969,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                 )}
                 <button onClick={() => { setShowDiscountMenu(v => !v); setShowPricelistMenu(false); setShowFinancingMenu(false); setShowColConfig(false); setShowInheritMenu(false); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", border: "none", background: showDiscountMenu ? "#f5f4f0" : "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left", overflow: "hidden" }}>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
-                  <span style={{ fontWeight: 600, whiteSpace: "nowrap" }}>Discount</span>
+                  <span style={{ fontWeight: 400, whiteSpace: "nowrap" }}>Discount</span>
                   <span style={{ flex: 1 }} />
                   <span style={{ fontSize: 11, color: "#8c8b86", fontWeight: 400, whiteSpace: "nowrap" }}>{discountMode === "transaction" ? "Transaction" : "Line item"}</span>
                   <svg width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="#8c8b86" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M3 1l3 3-3 3"/></svg>
@@ -3004,7 +3004,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                 )}
                 <button onClick={() => { setShowInheritMenu(v => !v); setShowPricelistMenu(false); setShowFinancingMenu(false); setShowDiscountMenu(false); setShowColConfig(false); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", border: "none", background: showInheritMenu ? "#f5f4f0" : "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left", overflow: "hidden" }}>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                  <span style={{ fontWeight: 600, whiteSpace: "nowrap" }}>Inherit from</span>
+                  <span style={{ fontWeight: 400, whiteSpace: "nowrap" }}>Inherit from</span>
                   <span style={{ flex: 1 }} />
                   <svg width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="#8c8b86" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M3 1l3 3-3 3"/></svg>
                 </button>
@@ -3371,13 +3371,13 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                                 {nb && <span style={{ fontSize: 9, fontWeight: 700, padding: "1px 5px", borderRadius: 3, background: "#fef3c7", color: "#92400e" }}>NON-BILLABLE</span>}
                                 {p._source === "quote" && (
                                   <span title={p._sourceTitle ? `Inherited from Quote ${p._sourceId} · ${p._sourceTitle}` : `Inherited from Quote ${p._sourceId}`} style={{ fontSize: 10, fontWeight: 600, padding: "2px 7px", borderRadius: 4, background: "#dbeafe", color: "#1e40af", display: "inline-flex", alignItems: "center", gap: 4, letterSpacing: "0.01em" }}>
-                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                                     Inherited from {p._sourceId}
                                   </span>
                                 )}
                                 {(p._source === "po" || p._source === "so") && (
                                   <span title={p._sourceTitle ? `Inherited from ${p._source.toUpperCase()} ${p._sourceId} · ${p._sourceTitle}` : `Inherited from ${p._source.toUpperCase()} ${p._sourceId}`} style={{ fontSize: 10, fontWeight: 600, padding: "2px 7px", borderRadius: 4, background: p._source === "po" ? "#fef3c7" : "#fee2e2", color: p._source === "po" ? "#854d0e" : "#991b1b", display: "inline-flex", alignItems: "center", gap: 4, letterSpacing: "0.01em" }}>
-                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                                     Inherited from {p._sourceId}
                                   </span>
                                 )}
@@ -3438,11 +3438,11 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M20.188 10.934c.388.472.582.707.582 1.066s-.194.594-.582 1.066C18.768 14.79 15.636 18 12 18c-3.636 0-6.768-3.21-8.188-4.934C3.424 12.594 3.23 12.36 3.23 12s.194-.594.582-1.066C5.232 9.21 8.364 6 12 6c3.636 0 6.768 3.21 8.188 4.934z"/></svg>
                                 View item details
                               </button>
-                              {p._locked ? (
+                              {(p._locked || p._source === "quote") ? (
                                 <>
                                   <div style={{ height: 1, background: "#f0eeea", margin: "2px 0" }} />
                                   <div style={{ padding: "10px 14px", fontSize: 11, color: "#8c8b86", lineHeight: 1.45, background: "#fafaf8" }}>
-                                    Editing locked — line item inherited from {p._source === "po" ? "PO" : "SO"} <strong style={{ ...tn, color: "#4a4a46" }}>{p._sourceId}</strong>. Remove the {p._source === "po" ? "PO" : "SO"} link to edit.
+                                    Editing locked — line item inherited from {p._source === "quote" ? "Quote" : p._source === "po" ? "PO" : "SO"} <strong style={{ ...tn, color: "#4a4a46" }}>{p._sourceId}</strong>. Remove the {p._source === "quote" ? "Quote" : p._source === "po" ? "PO" : "SO"} link to edit.
                                   </div>
                                 </>
                               ) : (
