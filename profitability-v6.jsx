@@ -4164,7 +4164,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
               <div style={{ padding: "0 24px", borderBottom: "1px solid #e8e7e2", background: "#fff", display: "flex", gap: 4 }}>
                 {[
                   { id: "available", label: "Available Quotes", count: available.length },
-                  { id: "linked", label: "Selected Quotes", count: linkedQuotes.length },
+                  { id: "linked", label: "Added Quotes", count: linkedQuotes.length },
                 ].map(t => {
                   const active = inheritTab === t.id;
                   return (
@@ -4335,7 +4335,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
               <div style={{ padding: "0 24px", borderBottom: "1px solid #e8e7e2", background: "#fff", display: "flex", gap: 4 }}>
                 {[
                   { id: "available", label: "Available PO/SO's", count: available.length },
-                  { id: "linked", label: "Selected PO/SO's", count: linkedPos.length },
+                  { id: "linked", label: "Added PO/SO's", count: linkedPos.length },
                 ].map(t => {
                   const active = inheritTab === t.id;
                   return (
