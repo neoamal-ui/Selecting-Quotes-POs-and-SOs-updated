@@ -2838,11 +2838,11 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                     <div style={{ height: 1, background: "#f0eeea", margin: "4px 0" }} />
                     <button onClick={() => { setShowAddMenu(false); setInheritSlider("quote"); setInheritTab("available"); setInheritSearch(""); setInheritChecked(new Set()); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "9px 14px", border: "none", background: "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left" }}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 5a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -14"/><path d="M8 8a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1v1a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1l0 -1"/><path d="M8 14l0 .01"/><path d="M12 14l0 .01"/><path d="M16 14l0 .01"/><path d="M8 17l0 .01"/><path d="M12 17l0 .01"/><path d="M16 17l0 .01"/></svg>
-                      Quote
+                      From Quote
                     </button>
                     <button onClick={() => { setShowAddMenu(false); setInheritSlider("po-so"); setInheritTab("available"); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "9px 14px", border: "none", background: "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left" }}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M13 17h-7v-14h-2"/><path d="M6 5l14 1l-.575 4.022m-4.925 2.978h-8.5"/><path d="M21 15h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5"/><path d="M19 21v1m0 -8v1"/></svg>
-                      PO/SO
+                      From PO/SO
                     </button>
                     <div style={{ height: 1, background: "#f0eeea", margin: "4px 0" }} />
                     <button className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "9px 14px", border: "none", background: "none", cursor: "not-allowed", fontSize: 13, color: "#b0afa9", textAlign: "left" }}>
