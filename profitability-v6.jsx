@@ -4193,7 +4193,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                   {inheritTab === "available" && (
                     <label title="Include this customer's quotes that are already linked to another job" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "#4a4a46", cursor: "pointer", whiteSpace: "nowrap", padding: "4px 4px" }}>
                       <input type="checkbox" checked={inheritShowOnOtherJobs} onChange={e => setInheritShowOnOtherJobs(e.target.checked)} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
-                      Show quotes on other jobs
+                      Show all quotes
                     </label>
                   )}
                 </div>
@@ -4231,12 +4231,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                             </td>
                             <td style={{ padding: "12px", fontSize: 13, fontWeight: 600, color: "#1a1a18", ...tn }}>{q.id}</td>
                             <td style={{ padding: "12px", fontSize: 13, color: "#1a1a18" }}>
-                              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                                <span style={{ fontWeight: 500 }}>{q.title}</span>
-                                {q.attachedJob && (
-                                  <span title={`Already linked to ${q.attachedJob}`} style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 4, background: "#fef3c7", color: "#854d0e", letterSpacing: "0.02em", ...tn }}>On {q.attachedJob}</span>
-                                )}
-                              </div>
+                              <div style={{ fontWeight: 500 }}>{q.title}</div>
                               <div style={{ fontSize: 11, color: "#a3a29c", marginTop: 2 }}>{q.items.length} line item{q.items.length === 1 ? "" : "s"}</div>
                             </td>
                             <td style={{ padding: "12px", fontSize: 12, color: "#6b6a65", ...tn }}>{q.date}</td>
@@ -4361,7 +4356,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                 {inheritTab === "available" && (
                   <label title="Include this customer's PO/SOs that are already linked to another job" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "#4a4a46", cursor: "pointer", whiteSpace: "nowrap", padding: "4px 4px" }}>
                     <input type="checkbox" checked={inheritShowOnOtherJobs} onChange={e => setInheritShowOnOtherJobs(e.target.checked)} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
-                    Show PO/SOs on other jobs
+                    Show all PO/SO
                   </label>
                 )}
                 {/* Type filter */}
@@ -4436,12 +4431,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                               <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 5, background: p.type === "PO" ? "#e0e7ff" : "#fef3c7", color: p.type === "PO" ? "#3730a3" : "#92400e" }}>{p.type}</span>
                             </td>
                             <td style={{ padding: "12px", fontSize: 13, color: "#1a1a18" }}>
-                              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                                <span style={{ fontWeight: 500 }}>{p.title}</span>
-                                {p.attachedJob && (
-                                  <span title={`Already linked to ${p.attachedJob}`} style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 4, background: "#fef3c7", color: "#854d0e", letterSpacing: "0.02em", ...tn }}>On {p.attachedJob}</span>
-                                )}
-                              </div>
+                              <div style={{ fontWeight: 500 }}>{p.title}</div>
                               <div style={{ fontSize: 11, color: "#a3a29c", marginTop: 2 }}>{p.vendor} · {p.items.length} line item{p.items.length === 1 ? "" : "s"}</div>
                             </td>
                             <td style={{ padding: "12px", fontSize: 12, color: "#6b6a65", ...tn }}>{p.date}</td>
