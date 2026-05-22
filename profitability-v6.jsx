@@ -3407,7 +3407,6 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                                 <span className="hover-link" onClick={(e) => { e.stopPropagation(); setViewItem(p); }} style={{ fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", cursor: "pointer", color: "#1a1a18", minWidth: 0 }}>{p.name}</span>
                                 {p._source && (() => {
                                   const tip = p._sourceTitle ? `${p._sourceId} · ${p._sourceTitle}` : p._sourceId;
-                                  const color = p._source === "quote" ? "#1e40af" : p._source === "po" ? "#854d0e" : "#991b1b";
                                   const openLinked = (e) => {
                                     e.stopPropagation();
                                     if (p._source === "quote") {
@@ -3416,9 +3415,14 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                                       setInheritSlider("po-so"); setInheritTab("linked"); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null);
                                     }
                                   };
+                                  const icon = p._source === "quote" ? (
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 5a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -14"/><path d="M8 8a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1v1a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1l0 -1"/><path d="M8 14l0 .01"/><path d="M12 14l0 .01"/><path d="M16 14l0 .01"/><path d="M8 17l0 .01"/><path d="M12 17l0 .01"/><path d="M16 17l0 .01"/></svg>
+                                  ) : (
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M13 17h-7v-14h-2"/><path d="M6 5l14 1l-.575 4.022m-4.925 2.978h-8.5"/><path d="M21 15h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5"/><path d="M19 21v1m0 -8v1"/></svg>
+                                  );
                                   return (
-                                    <span title={tip} onClick={openLinked} style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", color, cursor: "pointer" }}>
-                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                                    <span title={tip} onClick={openLinked} style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", color: "#1e40af", cursor: "pointer" }}>
+                                      {icon}
                                     </span>
                                   );
                                 })()}
@@ -4163,12 +4167,12 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
               {/* Tabs */}
               <div style={{ padding: "0 24px", borderBottom: "1px solid #e8e7e2", background: "#fff", display: "flex", gap: 4 }}>
                 {[
-                  { id: "available", label: "Available Quotes", count: available.length },
-                  { id: "linked", label: "Added Quotes", count: linkedQuotes.length },
+                  { id: "available", label: "Available Quotes", count: available.length, tip: "Accepted quotes associated to this job" },
+                  { id: "linked", label: "Added Quotes", count: linkedQuotes.length, tip: "Quotes already added to this job" },
                 ].map(t => {
                   const active = inheritTab === t.id;
                   return (
-                    <button key={t.id} onClick={() => switchTab(t.id)} className="btn-press" style={{ fontSize: 13, fontWeight: active ? 700 : 500, color: active ? "#1a1a18" : "#6b6a65", padding: "12px 4px", border: "none", borderBottom: active ? "2px solid #1a1a18" : "2px solid transparent", background: "none", cursor: "pointer", marginRight: 16, display: "inline-flex", alignItems: "center", gap: 6 }}>
+                    <button key={t.id} title={t.tip} onClick={() => switchTab(t.id)} className="btn-press" style={{ fontSize: 13, fontWeight: active ? 700 : 500, color: active ? "#1a1a18" : "#6b6a65", padding: "12px 4px", border: "none", borderBottom: active ? "2px solid #1a1a18" : "2px solid transparent", background: "none", cursor: "pointer", marginRight: 16, display: "inline-flex", alignItems: "center", gap: 6 }}>
                       {t.label}
                       <span style={{ fontSize: 11, fontWeight: 700, padding: "1px 7px", borderRadius: 10, background: active ? "#1a1a18" : "#e8e7e2", color: active ? "#fff" : "#6b6a65", ...tn }}>{t.count}</span>
                     </button>
@@ -4334,12 +4338,12 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
               {/* Tabs */}
               <div style={{ padding: "0 24px", borderBottom: "1px solid #e8e7e2", background: "#fff", display: "flex", gap: 4 }}>
                 {[
-                  { id: "available", label: "Available PO/SO's", count: available.length },
-                  { id: "linked", label: "Added PO/SO's", count: linkedPos.length },
+                  { id: "available", label: "Available PO/SO's", count: available.length, tip: "PO/SO associated to this job" },
+                  { id: "linked", label: "Added PO/SO's", count: linkedPos.length, tip: "PO/SO already added to this job" },
                 ].map(t => {
                   const active = inheritTab === t.id;
                   return (
-                    <button key={t.id} onClick={() => switchTab(t.id)} className="btn-press" style={{ fontSize: 13, fontWeight: active ? 700 : 500, color: active ? "#1a1a18" : "#6b6a65", padding: "12px 4px", border: "none", borderBottom: active ? "2px solid #1a1a18" : "2px solid transparent", background: "none", cursor: "pointer", marginRight: 16, display: "inline-flex", alignItems: "center", gap: 6 }}>
+                    <button key={t.id} title={t.tip} onClick={() => switchTab(t.id)} className="btn-press" style={{ fontSize: 13, fontWeight: active ? 700 : 500, color: active ? "#1a1a18" : "#6b6a65", padding: "12px 4px", border: "none", borderBottom: active ? "2px solid #1a1a18" : "2px solid transparent", background: "none", cursor: "pointer", marginRight: 16, display: "inline-flex", alignItems: "center", gap: 6 }}>
                       {t.label}
                       <span style={{ fontSize: 11, fontWeight: 700, padding: "1px 7px", borderRadius: 10, background: active ? "#1a1a18" : "#e8e7e2", color: active ? "#fff" : "#6b6a65", ...tn }}>{t.count}</span>
                     </button>
