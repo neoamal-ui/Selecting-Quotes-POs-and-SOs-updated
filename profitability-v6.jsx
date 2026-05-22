@@ -4101,21 +4101,18 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
         );
       })(), document.body)}
 
-      {/* Quote selection slider — single list, selected first */}
+      {/* Quote selection slider — Selected section on top, Available below */}
       {inheritSlider === "quote" && createPortal((() => {
         const linkedIds = new Set(linkedQuotes.map(q => q.id));
         const available = ACCEPTED_QUOTES.filter(q => !linkedIds.has(q.id) && (inheritShowOnOtherJobs || !q.attachedJob));
-        const combined = [...linkedQuotes, ...available]; // selected on top
-        const filtered = combined.filter(q => {
+        const filteredAvailable = available.filter(q => {
           if (!inheritSearch) return true;
           const s = inheritSearch.toLowerCase();
           return q.id.toLowerCase().includes(s) || q.title.toLowerCase().includes(s);
         });
-        const allFilteredIds = filtered.map(q => q.id);
-        const allChecked = allFilteredIds.length > 0 && allFilteredIds.every(id => inheritChecked.has(id));
-        const someChecked = allFilteredIds.some(id => inheritChecked.has(id));
-        const checkedLinked = [...inheritChecked].filter(id => linkedIds.has(id));
-        const checkedAvailable = [...inheritChecked].filter(id => !linkedIds.has(id));
+        const allFilteredAvailableIds = filteredAvailable.map(q => q.id);
+        const allChecked = allFilteredAvailableIds.length > 0 && allFilteredAvailableIds.every(id => inheritChecked.has(id));
+        const someChecked = allFilteredAvailableIds.some(id => inheritChecked.has(id));
         const close = () => { setInheritSlider(null); setInheritSearch(""); setInheritChecked(new Set()); };
         const handleAdd = () => {
           const toAdd = available.filter(q => inheritChecked.has(q.id));
@@ -4140,11 +4137,6 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
           setToast(`Added ${toAdd.length} quote${toAdd.length > 1 ? "s" : ""} to the job`);
           setInheritChecked(prev => { const n = new Set(prev); toAdd.forEach(q => n.delete(q.id)); return n; });
         };
-        const handleUnlink = () => {
-          if (checkedLinked.length === 0) return;
-          setRemoveConfirm({ kind: "quote", ids: checkedLinked });
-          setInheritChecked(new Set());
-        };
         return (
           <>
             <div className="overlay-enter sidesheet-overlay" onClick={close} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.2)", zIndex: 100 }} />
@@ -4152,99 +4144,121 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
               {/* Header */}
               <div style={{ padding: "18px 24px 14px", borderBottom: "1px solid #e8e7e2", display: "flex", alignItems: "flex-start", gap: 12 }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: "#1a1a18" }}>Quote line items on this job</div>
-                  <div style={{ fontSize: 12, color: "#8c8b86", marginTop: 4 }}>Link new quotes to add their line items, or unlink ones already on the job.</div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: "#1a1a18" }}>Add Quotes</div>
+                  <div style={{ fontSize: 12, color: "#8c8b86", marginTop: 4 }}>Link customer quotes to add their line items to this job.</div>
                 </div>
                 <button onClick={close} aria-label="Close" style={{ background: "none", border: "none", cursor: "pointer", color: "#8c8b86", padding: 4, display: "flex", alignItems: "center", borderRadius: 6 }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
               </div>
-              {/* Search */}
-              <div style={{ padding: "12px 24px", borderBottom: "1px solid #f0eeea", background: "#fafaf8" }}>
-                <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-                  <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a3a29c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    <input
-                      type="text"
-                      autoFocus
-                      placeholder="Search by quote number or title..."
-                      value={inheritSearch}
-                      onChange={e => setInheritSearch(e.target.value)}
-                      style={{ width: "100%", fontSize: 13, padding: "8px 10px 8px 32px", borderRadius: 7, border: "1px solid #e0dfda", background: "#fff", outline: "none" }}
-                    />
-                  </div>
-                  <label title="Include this customer's quotes that are already linked to another job" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "#4a4a46", cursor: "pointer", whiteSpace: "nowrap", padding: "4px 4px" }}>
-                    <input type="checkbox" checked={inheritShowOnOtherJobs} onChange={e => setInheritShowOnOtherJobs(e.target.checked)} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
-                    Show all quotes
-                  </label>
-                </div>
-              </div>
-              {/* Table */}
+              {/* Body: two stacked sections */}
               <div style={{ flex: 1, overflow: "auto" }}>
-                {filtered.length === 0 ? (
-                  <div style={{ padding: 40, textAlign: "center", color: "#8c8b86", fontSize: 13 }}>
-                    {combined.length === 0 ? "No quotes available for this customer." : "No quotes match your search."}
-                  </div>
-                ) : (
-                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                    <thead>
-                      <tr style={{ borderBottom: "1px solid #e8e7e2", background: "#fafaf8", position: "sticky", top: 0, zIndex: 1 }}>
-                        <th style={{ padding: "10px 12px 10px 24px", width: 36, textAlign: "left" }}>
-                          <input type="checkbox" checked={allChecked} ref={el => { if (el) el.indeterminate = !allChecked && someChecked; }} onChange={e => { const next = new Set(inheritChecked); if (e.target.checked) allFilteredIds.forEach(id => next.add(id)); else allFilteredIds.forEach(id => next.delete(id)); setInheritChecked(next); }} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
-                        </th>
-                        <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Quote #</th>
-                        <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Title</th>
-                        <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Date</th>
-                        <th style={{ padding: "10px 12px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Value</th>
-                        <th style={{ padding: "10px 24px 10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filtered.map(q => {
-                        const checked = inheritChecked.has(q.id);
-                        const isLinked = linkedIds.has(q.id);
-                        const toggle = () => setInheritChecked(prev => { const n = new Set(prev); if (n.has(q.id)) n.delete(q.id); else n.add(q.id); return n; });
-                        return (
-                          <tr key={q.id} onClick={toggle} className="picker-row" style={{ cursor: "pointer", borderBottom: "1px solid #f0eeea", background: checked ? "#fafaf8" : "transparent", borderLeft: isLinked ? "3px solid #1e40af" : "3px solid transparent" }}>
-                            <td style={{ padding: "12px 12px 12px 21px" }}>
-                              <input type="checkbox" checked={checked} onChange={toggle} onClick={e => e.stopPropagation()} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
-                            </td>
-                            <td style={{ padding: "12px", fontSize: 13, fontWeight: 600, color: "#1a1a18", ...tn }}>{q.id}</td>
+                {/* Section 1: Selected quotes (with inline Remove per row) */}
+                {linkedQuotes.length > 0 && (
+                  <div style={{ borderBottom: "1px solid #e8e7e2" }}>
+                    <div style={{ padding: "16px 24px 8px", display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#1a1a18" }}>Selected Quotes</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, padding: "1px 7px", borderRadius: 10, background: "#e8e7e2", color: "#6b6a65", ...tn }}>{linkedQuotes.length}</span>
+                    </div>
+                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                      <thead>
+                        <tr style={{ borderBottom: "1px solid #f0eeea" }}>
+                          <th style={{ padding: "8px 12px 8px 24px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Quote #</th>
+                          <th style={{ padding: "8px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Title</th>
+                          <th style={{ padding: "8px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Date</th>
+                          <th style={{ padding: "8px 12px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Value</th>
+                          <th style={{ padding: "8px 24px 8px 12px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Options</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {linkedQuotes.map(q => (
+                          <tr key={q.id} style={{ borderBottom: "1px solid #f0eeea" }}>
+                            <td style={{ padding: "12px 12px 12px 24px", fontSize: 13, fontWeight: 600, color: "#1a1a18", ...tn }}>{q.id}</td>
                             <td style={{ padding: "12px", fontSize: 13, color: "#1a1a18" }}>
-                              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                                <span style={{ fontWeight: 500 }}>{q.title}</span>
-                                {isLinked && (
-                                  <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 4, background: "#dbeafe", color: "#1e40af", letterSpacing: "0.02em", ...tn }}>Selected</span>
-                                )}
-                              </div>
+                              <div style={{ fontWeight: 500 }}>{q.title}</div>
                               <div style={{ fontSize: 11, color: "#a3a29c", marginTop: 2 }}>{q.items.length} line item{q.items.length === 1 ? "" : "s"}</div>
                             </td>
                             <td style={{ padding: "12px", fontSize: 12, color: "#6b6a65", ...tn }}>{q.date}</td>
                             <td style={{ padding: "12px", textAlign: "right", fontSize: 13, fontWeight: 600, color: "#1a1a18", ...tn }}>{$(q.value)}</td>
-                            <td style={{ padding: "12px 24px 12px 12px" }}>
-                              <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 5, background: "#dcfce7", color: "#166534" }}>{q.status}</span>
+                            <td style={{ padding: "12px 24px 12px 12px", textAlign: "right" }}>
+                              <button onClick={() => setRemoveConfirm({ kind: "quote", ids: [q.id] })} className="btn-press" style={{ fontSize: 12, fontWeight: 600, padding: "5px 12px", borderRadius: 6, border: "1px solid #fecaca", background: "#fff5f5", color: "#991b1b", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 5 }}>
+                                Remove
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+                              </button>
                             </td>
                           </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 )}
+                {/* Section 2: Available quotes */}
+                <div>
+                  <div style={{ padding: "16px 24px 10px", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#1a1a18" }}>Select Quotes to add line items to Job</span>
+                    <span style={{ flex: 1 }} />
+                    <label title="Include this customer's quotes that are already linked to another job" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "#4a4a46", cursor: "pointer", whiteSpace: "nowrap" }}>
+                      <input type="checkbox" checked={inheritShowOnOtherJobs} onChange={e => setInheritShowOnOtherJobs(e.target.checked)} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
+                      Show all quotes
+                    </label>
+                    <div style={{ position: "relative", width: 220 }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a3a29c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                      <input type="text" placeholder="Search…" value={inheritSearch} onChange={e => setInheritSearch(e.target.value)} style={{ width: "100%", fontSize: 12, padding: "6px 10px 6px 30px", borderRadius: 7, border: "1px solid #e0dfda", background: "#fff", outline: "none" }} />
+                    </div>
+                  </div>
+                  {filteredAvailable.length === 0 ? (
+                    <div style={{ padding: "32px 24px", textAlign: "center", color: "#8c8b86", fontSize: 13 }}>
+                      {available.length === 0 ? "All customer quotes are already linked to this job." : "No quotes match your search."}
+                    </div>
+                  ) : (
+                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                      <thead>
+                        <tr style={{ borderTop: "1px solid #e8e7e2", borderBottom: "1px solid #f0eeea", background: "#fafaf8" }}>
+                          <th style={{ padding: "10px 12px 10px 24px", width: 36, textAlign: "left" }}>
+                            <input type="checkbox" checked={allChecked} ref={el => { if (el) el.indeterminate = !allChecked && someChecked; }} onChange={e => { const next = new Set(inheritChecked); if (e.target.checked) allFilteredAvailableIds.forEach(id => next.add(id)); else allFilteredAvailableIds.forEach(id => next.delete(id)); setInheritChecked(next); }} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
+                          </th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Quote #</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Title</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Date</th>
+                          <th style={{ padding: "10px 12px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Value</th>
+                          <th style={{ padding: "10px 24px 10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredAvailable.map(q => {
+                          const checked = inheritChecked.has(q.id);
+                          const toggle = () => setInheritChecked(prev => { const n = new Set(prev); if (n.has(q.id)) n.delete(q.id); else n.add(q.id); return n; });
+                          return (
+                            <tr key={q.id} onClick={toggle} className="picker-row" style={{ cursor: "pointer", borderBottom: "1px solid #f0eeea", background: checked ? "#fafaf8" : "transparent" }}>
+                              <td style={{ padding: "12px 12px 12px 24px" }}>
+                                <input type="checkbox" checked={checked} onChange={toggle} onClick={e => e.stopPropagation()} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
+                              </td>
+                              <td style={{ padding: "12px", fontSize: 13, fontWeight: 600, color: "#1a1a18", ...tn }}>{q.id}</td>
+                              <td style={{ padding: "12px", fontSize: 13, color: "#1a1a18" }}>
+                                <div style={{ fontWeight: 500 }}>{q.title}</div>
+                                <div style={{ fontSize: 11, color: "#a3a29c", marginTop: 2 }}>{q.items.length} line item{q.items.length === 1 ? "" : "s"}</div>
+                              </td>
+                              <td style={{ padding: "12px", fontSize: 12, color: "#6b6a65", ...tn }}>{q.date}</td>
+                              <td style={{ padding: "12px", textAlign: "right", fontSize: 13, fontWeight: 600, color: "#1a1a18", ...tn }}>{$(q.value)}</td>
+                              <td style={{ padding: "12px 24px 12px 12px" }}>
+                                <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 5, background: "#dcfce7", color: "#166534" }}>{q.status}</span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
               </div>
               {/* Footer */}
               <div style={{ padding: "14px 24px", borderTop: "1px solid #e8e7e2", background: "#fafaf8", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
                 <span style={{ fontSize: 12, color: "#8c8b86" }}>
-                  {inheritChecked.size === 0 && "Select quotes to link or already-linked quotes to unlink"}
-                  {checkedAvailable.length > 0 && `${checkedAvailable.length} to link`}
-                  {checkedAvailable.length > 0 && checkedLinked.length > 0 && " · "}
-                  {checkedLinked.length > 0 && `${checkedLinked.length} to unlink`}
+                  {inheritChecked.size > 0 ? `${inheritChecked.size} quote${inheritChecked.size > 1 ? "s" : ""} selected` : "Select quotes to add"}
                 </span>
                 <div style={{ display: "flex", gap: 8 }}>
                   <button onClick={close} style={{ fontSize: 13, fontWeight: 600, padding: "8px 18px", borderRadius: 7, border: "1px solid #e0dfda", background: "#fff", cursor: "pointer", color: "#4a4a46" }}>Cancel</button>
-                  {checkedLinked.length > 0 && (
-                    <button onClick={handleUnlink} style={{ fontSize: 13, fontWeight: 700, padding: "8px 18px", borderRadius: 7, border: "1px solid #fecaca", background: "#fff", color: "#991b1b", cursor: "pointer" }}>Unlink ({checkedLinked.length})</button>
-                  )}
-                  <button onClick={handleAdd} disabled={checkedAvailable.length === 0} style={{ fontSize: 13, fontWeight: 700, padding: "8px 22px", borderRadius: 7, border: "none", background: checkedAvailable.length > 0 ? "#1a1a18" : "#d8d7d2", color: "#fff", cursor: checkedAvailable.length > 0 ? "pointer" : "default", transition: "background 120ms ease" }}>Link{checkedAvailable.length > 0 ? ` (${checkedAvailable.length})` : ""}</button>
+                  <button onClick={handleAdd} disabled={inheritChecked.size === 0} style={{ fontSize: 13, fontWeight: 700, padding: "8px 22px", borderRadius: 7, border: "none", background: inheritChecked.size > 0 ? "#1a1a18" : "#d8d7d2", color: "#fff", cursor: inheritChecked.size > 0 ? "pointer" : "default", transition: "background 120ms ease" }}>Link{inheritChecked.size > 0 ? ` (${inheritChecked.size})` : ""}</button>
                 </div>
               </div>
             </div>
@@ -4252,29 +4266,21 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
         );
       })(), document.body)}
 
-      {/* PO/SO selection slider — single list, selected first */}
+      {/* PO/SO selection slider — Selected section on top, Available below */}
       {inheritSlider === "po-so" && createPortal((() => {
         const linkedIds = new Set(linkedPos.map(p => p.id));
         const available = SUBMITTED_POS.filter(p => !linkedIds.has(p.id) && (inheritShowOnOtherJobs || !p.attachedJob));
-        const combined = [...linkedPos, ...available]; // selected on top
-        const filtered = combined.filter(p => {
+        const filteredAvailable = available.filter(p => {
           if (inheritTypeFilter && p.type !== inheritTypeFilter) return false;
           if (inheritStatusFilter && p.status !== inheritStatusFilter) return false;
           if (!inheritSearch) return true;
           const s = inheritSearch.toLowerCase();
           return p.id.toLowerCase().includes(s) || p.title.toLowerCase().includes(s);
         });
-        const allFilteredIds = filtered.map(p => p.id);
-        const allChecked = allFilteredIds.length > 0 && allFilteredIds.every(id => inheritChecked.has(id));
-        const someChecked = allFilteredIds.some(id => inheritChecked.has(id));
-        const checkedLinked = [...inheritChecked].filter(id => linkedIds.has(id));
-        const checkedAvailable = [...inheritChecked].filter(id => !linkedIds.has(id));
+        const allFilteredAvailableIds = filteredAvailable.map(p => p.id);
+        const allChecked = allFilteredAvailableIds.length > 0 && allFilteredAvailableIds.every(id => inheritChecked.has(id));
+        const someChecked = allFilteredAvailableIds.some(id => inheritChecked.has(id));
         const close = () => { setInheritSlider(null); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null); setInheritTypeMenuOpen(false); setInheritStatusMenuOpen(false); };
-        const handleUnlink = () => {
-          if (checkedLinked.length === 0) return;
-          setRemoveConfirm({ kind: "po", ids: checkedLinked });
-          setInheritChecked(new Set());
-        };
         const handleAdd = () => {
           const toAdd = available.filter(p => inheritChecked.has(p.id));
           if (toAdd.length === 0) return;
@@ -4303,6 +4309,12 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
           setToast(`Added ${toAdd.length} document${toAdd.length > 1 ? "s" : ""} — ${masterMsg}`);
           setInheritChecked(prev => { const n = new Set(prev); toAdd.forEach(p => n.delete(p.id)); return n; });
         };
+        const statusPalette = (s) => s === "Draft" ? { bg: "#f3f4f6", fg: "#6b7280" }
+          : s === "Submitted" ? { bg: "#dbeafe", fg: "#1e40af" }
+          : s === "Approved" ? { bg: "#dcfce7", fg: "#166534" }
+          : s === "Received" ? { bg: "#e0e7ff", fg: "#3730a3" }
+          : s === "Closed" ? { bg: "#e5e5e5", fg: "#4a4a46" }
+          : { bg: "#fef3c7", fg: "#854d0e" };
         return (
           <>
             <div className="overlay-enter sidesheet-overlay" onClick={close} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.2)", zIndex: 100 }} />
@@ -4310,138 +4322,164 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
               {/* Header */}
               <div style={{ padding: "18px 24px 14px", borderBottom: "1px solid #e8e7e2", display: "flex", alignItems: "flex-start", gap: 12 }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: "#1a1a18" }}>PO/SO line items on this job</div>
-                  <div style={{ fontSize: 12, color: "#8c8b86", marginTop: 4 }}>Link new POs/SOs to add their line items, or unlink ones already on the job.</div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: "#1a1a18" }}>Add PO/SO</div>
+                  <div style={{ fontSize: 12, color: "#8c8b86", marginTop: 4 }}>Link customer POs/SOs to add their line items to this job.</div>
                 </div>
                 <button onClick={close} aria-label="Close" style={{ background: "none", border: "none", cursor: "pointer", color: "#8c8b86", padding: 4, display: "flex", alignItems: "center", borderRadius: 6 }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
               </div>
-              {/* Search + filters */}
-              <div style={{ padding: "12px 24px", borderBottom: "1px solid #f0eeea", background: "#fafaf8", display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-                <div style={{ position: "relative", flex: 1, minWidth: 240 }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a3a29c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                  <input type="text" autoFocus placeholder="Search by PO/SO number or title..." value={inheritSearch} onChange={e => setInheritSearch(e.target.value)} style={{ width: "100%", fontSize: 13, padding: "8px 10px 8px 32px", borderRadius: 7, border: "1px solid #e0dfda", background: "#fff", outline: "none" }} />
-                </div>
-                <label title="Include this customer's PO/SOs that are already linked to another job" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "#4a4a46", cursor: "pointer", whiteSpace: "nowrap", padding: "4px 4px" }}>
-                  <input type="checkbox" checked={inheritShowOnOtherJobs} onChange={e => setInheritShowOnOtherJobs(e.target.checked)} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
-                  Show all PO/SO
-                </label>
-                {/* Type filter */}
-                <div style={{ position: "relative" }}>
-                  <button onClick={() => { setInheritTypeMenuOpen(v => !v); setInheritStatusMenuOpen(false); }} style={{ fontSize: 12, fontWeight: 600, padding: "7px 12px", borderRadius: 7, border: "1px solid #e0dfda", background: inheritTypeFilter ? "#1a1a18" : "#fff", cursor: "pointer", color: inheritTypeFilter ? "#fff" : "#4a4a46", display: "flex", alignItems: "center", gap: 6 }}>
-                    Type{inheritTypeFilter ? `: ${inheritTypeFilter}` : ""}
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                  </button>
-                  {inheritTypeMenuOpen && (
-                    <>
-                      <div onClick={() => setInheritTypeMenuOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 102 }} />
-                      <div className="dropdown-enter" style={{ position: "absolute", right: 0, top: "calc(100% + 4px)", width: 140, background: "#fff", border: "1px solid #e0dfda", borderRadius: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", zIndex: 103, padding: "4px 0" }}>
-                        {[{ v: null, l: "All types" }, { v: "PO", l: "PO" }, { v: "SO", l: "SO" }].map(opt => (
-                          <button key={opt.l} onClick={() => { setInheritTypeFilter(opt.v); setInheritTypeMenuOpen(false); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", border: "none", background: inheritTypeFilter === opt.v ? "#f5f4f0" : "none", cursor: "pointer", fontSize: 12, color: "#1a1a18", textAlign: "left", fontWeight: inheritTypeFilter === opt.v ? 600 : 400 }}>{opt.l}</button>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </div>
-                {/* Status filter */}
-                <div style={{ position: "relative" }}>
-                  <button onClick={() => { setInheritStatusMenuOpen(v => !v); setInheritTypeMenuOpen(false); }} style={{ fontSize: 12, fontWeight: 600, padding: "7px 12px", borderRadius: 7, border: "1px solid #e0dfda", background: inheritStatusFilter ? "#1a1a18" : "#fff", cursor: "pointer", color: inheritStatusFilter ? "#fff" : "#4a4a46", display: "flex", alignItems: "center", gap: 6 }}>
-                    Status{inheritStatusFilter ? `: ${inheritStatusFilter}` : ""}
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                  </button>
-                  {inheritStatusMenuOpen && (
-                    <>
-                      <div onClick={() => setInheritStatusMenuOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 102 }} />
-                      <div className="dropdown-enter" style={{ position: "absolute", right: 0, top: "calc(100% + 4px)", width: 160, background: "#fff", border: "1px solid #e0dfda", borderRadius: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", zIndex: 103, padding: "4px 0" }}>
-                        {[{ v: null, l: "All statuses" }, ...PO_SO_STATUSES.map(s => ({ v: s, l: s }))].map(opt => (
-                          <button key={opt.l} onClick={() => { setInheritStatusFilter(opt.v); setInheritStatusMenuOpen(false); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", border: "none", background: inheritStatusFilter === opt.v ? "#f5f4f0" : "none", cursor: "pointer", fontSize: 12, color: "#1a1a18", textAlign: "left", fontWeight: inheritStatusFilter === opt.v ? 600 : 400 }}>{opt.l}</button>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-              {/* Table */}
+              {/* Body: two stacked sections */}
               <div style={{ flex: 1, overflow: "auto" }}>
-                {filtered.length === 0 ? (
-                  <div style={{ padding: 40, textAlign: "center", color: "#8c8b86", fontSize: 13 }}>
-                    {combined.length === 0 ? "No POs/SOs available for this customer." : "No PO/SO matches your filters."}
-                  </div>
-                ) : (
-                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                    <thead>
-                      <tr style={{ borderBottom: "1px solid #e8e7e2", background: "#fafaf8", position: "sticky", top: 0, zIndex: 1 }}>
-                        <th style={{ padding: "10px 12px 10px 24px", width: 36, textAlign: "left" }}>
-                          <input type="checkbox" checked={allChecked} ref={el => { if (el) el.indeterminate = !allChecked && someChecked; }} onChange={e => { const next = new Set(inheritChecked); if (e.target.checked) allFilteredIds.forEach(id => next.add(id)); else allFilteredIds.forEach(id => next.delete(id)); setInheritChecked(next); }} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
-                        </th>
-                        <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>PO/SO #</th>
-                        <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Type</th>
-                        <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Title</th>
-                        <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Date</th>
-                        <th style={{ padding: "10px 12px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Value</th>
-                        <th style={{ padding: "10px 24px 10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filtered.map(p => {
-                        const checked = inheritChecked.has(p.id);
-                        const isLinked = linkedIds.has(p.id);
-                        const accent = p.type === "PO" ? "#854d0e" : "#991b1b";
-                        const toggle = () => setInheritChecked(prev => { const n = new Set(prev); if (n.has(p.id)) n.delete(p.id); else n.add(p.id); return n; });
-                        return (
-                          <tr key={p.id} onClick={toggle} className="picker-row" style={{ cursor: "pointer", borderBottom: "1px solid #f0eeea", background: checked ? "#fafaf8" : "transparent", borderLeft: isLinked ? `3px solid ${accent}` : "3px solid transparent" }}>
-                            <td style={{ padding: "12px 12px 12px 21px" }}>
-                              <input type="checkbox" checked={checked} onChange={toggle} onClick={e => e.stopPropagation()} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
-                            </td>
-                            <td style={{ padding: "12px", fontSize: 13, fontWeight: 600, color: "#1a1a18", ...tn }}>{p.id}</td>
+                {/* Section 1: Selected POs/SOs (with inline Remove per row) */}
+                {linkedPos.length > 0 && (
+                  <div style={{ borderBottom: "1px solid #e8e7e2" }}>
+                    <div style={{ padding: "16px 24px 8px", display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#1a1a18" }}>Selected PO/SO's</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, padding: "1px 7px", borderRadius: 10, background: "#e8e7e2", color: "#6b6a65", ...tn }}>{linkedPos.length}</span>
+                    </div>
+                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                      <thead>
+                        <tr style={{ borderBottom: "1px solid #f0eeea" }}>
+                          <th style={{ padding: "8px 12px 8px 24px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>PO/SO #</th>
+                          <th style={{ padding: "8px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Type</th>
+                          <th style={{ padding: "8px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Title</th>
+                          <th style={{ padding: "8px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Date</th>
+                          <th style={{ padding: "8px 12px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Value</th>
+                          <th style={{ padding: "8px 24px 8px 12px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Options</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {linkedPos.map(p => (
+                          <tr key={p.id} style={{ borderBottom: "1px solid #f0eeea" }}>
+                            <td style={{ padding: "12px 12px 12px 24px", fontSize: 13, fontWeight: 600, color: "#1a1a18", ...tn }}>{p.id}</td>
                             <td style={{ padding: "12px" }}>
                               <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 5, background: p.type === "PO" ? "#e0e7ff" : "#fef3c7", color: p.type === "PO" ? "#3730a3" : "#92400e" }}>{p.type}</span>
                             </td>
                             <td style={{ padding: "12px", fontSize: 13, color: "#1a1a18" }}>
-                              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                                <span style={{ fontWeight: 500 }}>{p.title}</span>
-                                {isLinked && (
-                                  <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 4, background: p.type === "PO" ? "#fef3c7" : "#fee2e2", color: accent, letterSpacing: "0.02em", ...tn }}>Selected</span>
-                                )}
-                              </div>
+                              <div style={{ fontWeight: 500 }}>{p.title}</div>
                               <div style={{ fontSize: 11, color: "#a3a29c", marginTop: 2 }}>{p.vendor} · {p.items.length} line item{p.items.length === 1 ? "" : "s"}</div>
                             </td>
                             <td style={{ padding: "12px", fontSize: 12, color: "#6b6a65", ...tn }}>{p.date}</td>
                             <td style={{ padding: "12px", textAlign: "right", fontSize: 13, fontWeight: 600, color: "#1a1a18", ...tn }}>{$(p.value)}</td>
-                            <td style={{ padding: "12px 24px 12px 12px" }}>
-                              {(() => {
-                                const s = p.status;
-                                const palette = s === "Draft" ? { bg: "#f3f4f6", fg: "#6b7280" }
-                                  : s === "Submitted" ? { bg: "#dbeafe", fg: "#1e40af" }
-                                  : s === "Approved" ? { bg: "#dcfce7", fg: "#166534" }
-                                  : s === "Received" ? { bg: "#e0e7ff", fg: "#3730a3" }
-                                  : s === "Closed" ? { bg: "#e5e5e5", fg: "#4a4a46" }
-                                  : { bg: "#fef3c7", fg: "#854d0e" };
-                                return <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 5, background: palette.bg, color: palette.fg }}>{s}</span>;
-                              })()}
+                            <td style={{ padding: "12px 24px 12px 12px", textAlign: "right" }}>
+                              <button onClick={() => setRemoveConfirm({ kind: "po", ids: [p.id] })} className="btn-press" style={{ fontSize: 12, fontWeight: 600, padding: "5px 12px", borderRadius: 6, border: "1px solid #fecaca", background: "#fff5f5", color: "#991b1b", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 5 }}>
+                                Remove
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+                              </button>
                             </td>
                           </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 )}
+                {/* Section 2: Available PO/SOs */}
+                <div>
+                  <div style={{ padding: "16px 24px 10px", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#1a1a18" }}>Select PO/SO to add line items to Job</span>
+                    <span style={{ flex: 1 }} />
+                    <label title="Include this customer's PO/SOs that are already linked to another job" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "#4a4a46", cursor: "pointer", whiteSpace: "nowrap" }}>
+                      <input type="checkbox" checked={inheritShowOnOtherJobs} onChange={e => setInheritShowOnOtherJobs(e.target.checked)} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
+                      Show all PO/SO
+                    </label>
+                    {/* Type filter */}
+                    <div style={{ position: "relative" }}>
+                      <button onClick={() => { setInheritTypeMenuOpen(v => !v); setInheritStatusMenuOpen(false); }} style={{ fontSize: 12, fontWeight: 600, padding: "6px 10px", borderRadius: 7, border: "1px solid #e0dfda", background: inheritTypeFilter ? "#1a1a18" : "#fff", cursor: "pointer", color: inheritTypeFilter ? "#fff" : "#4a4a46", display: "flex", alignItems: "center", gap: 6 }}>
+                        Type{inheritTypeFilter ? `: ${inheritTypeFilter}` : ""}
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                      </button>
+                      {inheritTypeMenuOpen && (
+                        <>
+                          <div onClick={() => setInheritTypeMenuOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 102 }} />
+                          <div className="dropdown-enter" style={{ position: "absolute", right: 0, top: "calc(100% + 4px)", width: 140, background: "#fff", border: "1px solid #e0dfda", borderRadius: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", zIndex: 103, padding: "4px 0" }}>
+                            {[{ v: null, l: "All types" }, { v: "PO", l: "PO" }, { v: "SO", l: "SO" }].map(opt => (
+                              <button key={opt.l} onClick={() => { setInheritTypeFilter(opt.v); setInheritTypeMenuOpen(false); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", border: "none", background: inheritTypeFilter === opt.v ? "#f5f4f0" : "none", cursor: "pointer", fontSize: 12, color: "#1a1a18", textAlign: "left", fontWeight: inheritTypeFilter === opt.v ? 600 : 400 }}>{opt.l}</button>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    {/* Status filter */}
+                    <div style={{ position: "relative" }}>
+                      <button onClick={() => { setInheritStatusMenuOpen(v => !v); setInheritTypeMenuOpen(false); }} style={{ fontSize: 12, fontWeight: 600, padding: "6px 10px", borderRadius: 7, border: "1px solid #e0dfda", background: inheritStatusFilter ? "#1a1a18" : "#fff", cursor: "pointer", color: inheritStatusFilter ? "#fff" : "#4a4a46", display: "flex", alignItems: "center", gap: 6 }}>
+                        Status{inheritStatusFilter ? `: ${inheritStatusFilter}` : ""}
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                      </button>
+                      {inheritStatusMenuOpen && (
+                        <>
+                          <div onClick={() => setInheritStatusMenuOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 102 }} />
+                          <div className="dropdown-enter" style={{ position: "absolute", right: 0, top: "calc(100% + 4px)", width: 160, background: "#fff", border: "1px solid #e0dfda", borderRadius: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", zIndex: 103, padding: "4px 0" }}>
+                            {[{ v: null, l: "All statuses" }, ...PO_SO_STATUSES.map(s => ({ v: s, l: s }))].map(opt => (
+                              <button key={opt.l} onClick={() => { setInheritStatusFilter(opt.v); setInheritStatusMenuOpen(false); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", border: "none", background: inheritStatusFilter === opt.v ? "#f5f4f0" : "none", cursor: "pointer", fontSize: 12, color: "#1a1a18", textAlign: "left", fontWeight: inheritStatusFilter === opt.v ? 600 : 400 }}>{opt.l}</button>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    <div style={{ position: "relative", width: 220 }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a3a29c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                      <input type="text" placeholder="Search…" value={inheritSearch} onChange={e => setInheritSearch(e.target.value)} style={{ width: "100%", fontSize: 12, padding: "6px 10px 6px 30px", borderRadius: 7, border: "1px solid #e0dfda", background: "#fff", outline: "none" }} />
+                    </div>
+                  </div>
+                  {filteredAvailable.length === 0 ? (
+                    <div style={{ padding: "32px 24px", textAlign: "center", color: "#8c8b86", fontSize: 13 }}>
+                      {available.length === 0 ? "All customer POs/SOs are already linked to this job." : "No PO/SO matches your filters."}
+                    </div>
+                  ) : (
+                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                      <thead>
+                        <tr style={{ borderTop: "1px solid #e8e7e2", borderBottom: "1px solid #f0eeea", background: "#fafaf8" }}>
+                          <th style={{ padding: "10px 12px 10px 24px", width: 36, textAlign: "left" }}>
+                            <input type="checkbox" checked={allChecked} ref={el => { if (el) el.indeterminate = !allChecked && someChecked; }} onChange={e => { const next = new Set(inheritChecked); if (e.target.checked) allFilteredAvailableIds.forEach(id => next.add(id)); else allFilteredAvailableIds.forEach(id => next.delete(id)); setInheritChecked(next); }} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
+                          </th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>PO/SO #</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Type</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Title</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Date</th>
+                          <th style={{ padding: "10px 12px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Value</th>
+                          <th style={{ padding: "10px 24px 10px 12px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8c8b86", textTransform: "uppercase", letterSpacing: "0.06em" }}>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredAvailable.map(p => {
+                          const checked = inheritChecked.has(p.id);
+                          const toggle = () => setInheritChecked(prev => { const n = new Set(prev); if (n.has(p.id)) n.delete(p.id); else n.add(p.id); return n; });
+                          const palette = statusPalette(p.status);
+                          return (
+                            <tr key={p.id} onClick={toggle} className="picker-row" style={{ cursor: "pointer", borderBottom: "1px solid #f0eeea", background: checked ? "#fafaf8" : "transparent" }}>
+                              <td style={{ padding: "12px 12px 12px 24px" }}>
+                                <input type="checkbox" checked={checked} onChange={toggle} onClick={e => e.stopPropagation()} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
+                              </td>
+                              <td style={{ padding: "12px", fontSize: 13, fontWeight: 600, color: "#1a1a18", ...tn }}>{p.id}</td>
+                              <td style={{ padding: "12px" }}>
+                                <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 5, background: p.type === "PO" ? "#e0e7ff" : "#fef3c7", color: p.type === "PO" ? "#3730a3" : "#92400e" }}>{p.type}</span>
+                              </td>
+                              <td style={{ padding: "12px", fontSize: 13, color: "#1a1a18" }}>
+                                <div style={{ fontWeight: 500 }}>{p.title}</div>
+                                <div style={{ fontSize: 11, color: "#a3a29c", marginTop: 2 }}>{p.vendor} · {p.items.length} line item{p.items.length === 1 ? "" : "s"}</div>
+                              </td>
+                              <td style={{ padding: "12px", fontSize: 12, color: "#6b6a65", ...tn }}>{p.date}</td>
+                              <td style={{ padding: "12px", textAlign: "right", fontSize: 13, fontWeight: 600, color: "#1a1a18", ...tn }}>{$(p.value)}</td>
+                              <td style={{ padding: "12px 24px 12px 12px" }}>
+                                <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 5, background: palette.bg, color: palette.fg }}>{p.status}</span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
               </div>
               {/* Footer */}
               <div style={{ padding: "14px 24px", borderTop: "1px solid #e8e7e2", background: "#fafaf8", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
                 <span style={{ fontSize: 12, color: "#8c8b86" }}>
-                  {inheritChecked.size === 0 && "Select PO/SO to link or already-linked ones to unlink"}
-                  {checkedAvailable.length > 0 && `${checkedAvailable.length} to link`}
-                  {checkedAvailable.length > 0 && checkedLinked.length > 0 && " · "}
-                  {checkedLinked.length > 0 && `${checkedLinked.length} to unlink`}
+                  {inheritChecked.size > 0 ? `${inheritChecked.size} document${inheritChecked.size > 1 ? "s" : ""} selected` : "Select PO/SO to add"}
                 </span>
                 <div style={{ display: "flex", gap: 8 }}>
                   <button onClick={close} style={{ fontSize: 13, fontWeight: 600, padding: "8px 18px", borderRadius: 7, border: "1px solid #e0dfda", background: "#fff", cursor: "pointer", color: "#4a4a46" }}>Cancel</button>
-                  {checkedLinked.length > 0 && (
-                    <button onClick={handleUnlink} style={{ fontSize: 13, fontWeight: 700, padding: "8px 18px", borderRadius: 7, border: "1px solid #fecaca", background: "#fff", color: "#991b1b", cursor: "pointer" }}>Unlink ({checkedLinked.length})</button>
-                  )}
-                  <button onClick={handleAdd} disabled={checkedAvailable.length === 0} style={{ fontSize: 13, fontWeight: 700, padding: "8px 22px", borderRadius: 7, border: "none", background: checkedAvailable.length > 0 ? "#1a1a18" : "#d8d7d2", color: "#fff", cursor: checkedAvailable.length > 0 ? "pointer" : "default", transition: "background 120ms ease" }}>Link{checkedAvailable.length > 0 ? ` (${checkedAvailable.length})` : ""}</button>
+                  <button onClick={handleAdd} disabled={inheritChecked.size === 0} style={{ fontSize: 13, fontWeight: 700, padding: "8px 22px", borderRadius: 7, border: "none", background: inheritChecked.size > 0 ? "#1a1a18" : "#d8d7d2", color: "#fff", cursor: inheritChecked.size > 0 ? "pointer" : "default", transition: "background 120ms ease" }}>Link{inheritChecked.size > 0 ? ` (${inheritChecked.size})` : ""}</button>
                 </div>
               </div>
             </div>
