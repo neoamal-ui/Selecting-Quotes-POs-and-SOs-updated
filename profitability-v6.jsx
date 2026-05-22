@@ -181,6 +181,21 @@ const ACCEPTED_QUOTES = [
       { name: "Ventilation install — labor", type: "SVC", group: "Ventilation", qty: 1, unit: "lot", unitCost: 240, unitPrice: 540, billable: true, description: "Cut-in, mount, and wire attic fan + soffit vents", sku: "SVC-VN-INST" },
     ],
   },
+  // Customer quotes already attached to other jobs — surfaced only when "show on other jobs" is toggled
+  {
+    id: "Q-2089", title: "Garage roof replacement", date: "Sep 28, 2024", value: 6240, status: "Accepted", attachedJob: "JOB-1142",
+    items: [
+      { name: "GAF Timberline HDZ — Pewter Gray", type: "MAT", group: "Roofing materials", qty: 18, unit: "sq", unitCost: 110, unitPrice: 395, billable: true, description: "Architectural shingle, garage roof", sku: "GAF-HDZ-PEW" },
+      { name: "Roof tear-off — labor", type: "SVC", group: "Tear-off & disposal", qty: 18, unit: "sq", unitCost: 38, unitPrice: 190, billable: true, description: "Single-layer tear-off and haul", sku: "SVC-TEAR-1L" },
+    ],
+  },
+  {
+    id: "Q-2143", title: "Solar prep work", date: "Oct 26, 2024", value: 2180, status: "Accepted", attachedJob: "JOB-1198",
+    items: [
+      { name: "Solar mounting rail kit", type: "MAT", group: "Solar prep", qty: 1, unit: "kit", unitCost: 380, unitPrice: 880, billable: true, description: "Universal flush-mount rail for asphalt shingle roofs", sku: "SOL-RAIL-FM" },
+      { name: "Solar prep labor", type: "SVC", group: "Solar prep", qty: 1, unit: "lot", unitCost: 520, unitPrice: 1300, billable: true, description: "Penetration sealing, conduit run, attic feed", sku: "SVC-SOL-PREP" },
+    ],
+  },
 ];
 
 // POs/SOs available to inherit from — all statuses are eligible (the filter lets the user narrow)
@@ -237,6 +252,20 @@ const SUBMITTED_POS = [
     id: "SO-4040", type: "SO", title: "Gutter install subcontractor", date: "Oct 23, 2024", value: 1120, status: "Draft", vendor: "Northgate Gutters",
     items: [
       { name: "Gutter installation labor", type: "SVC", group: "Gutters & drainage", qty: 1, unit: "lot", unitCost: 540, unitPrice: 1120, billable: true, description: "Subcontracted crew for gutter install", sku: "SVC-GT-INST" },
+    ],
+  },
+  // Customer PO/SOs already attached to other jobs — surfaced only when "show on other jobs" is toggled
+  {
+    id: "PO-3018", type: "PO", title: "Decking & sheathing", date: "Sep 30, 2024", value: 2340, status: "Received", vendor: "ABC Building Supply", attachedJob: "JOB-1142",
+    items: [
+      { name: "OSB sheathing — 4×8, 7/16", type: "MAT", group: "Decking & sheathing", qty: 32, unit: "sheet", unitCost: 28, unitPrice: 78, billable: true, description: "Roof decking replacement stock", sku: "WD-OSB-716" },
+      { name: "Roof nails — coil, 1-3/4", type: "MAT", group: "Decking & sheathing", qty: 4, unit: "box", unitCost: 36, unitPrice: 95, billable: true, description: "Coil roofing nails for shingle install", sku: "FT-NAIL-CL" },
+    ],
+  },
+  {
+    id: "SO-4055", type: "SO", title: "Electrical disconnect — solar", date: "Oct 28, 2024", value: 680, status: "Submitted", vendor: "Bright Spark Electric", attachedJob: "JOB-1198",
+    items: [
+      { name: "Solar disconnect labor", type: "SVC", group: "Solar prep", qty: 1, unit: "lot", unitCost: 320, unitPrice: 680, billable: true, description: "Licensed electrician for safe disconnect / reconnect", sku: "SVC-SOL-DC" },
     ],
   },
 ];
@@ -1952,6 +1981,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
   const [showInheritMenu, setShowInheritMenu] = useState(false);
   const [inheritSlider, setInheritSlider] = useState(null); // "quote" | "po-so" | null
   const [inheritTab, setInheritTab] = useState("available"); // "available" | "linked"
+  const [inheritShowOnOtherJobs, setInheritShowOnOtherJobs] = useState(false);
   const [inheritSearch, setInheritSearch] = useState("");
   const [inheritChecked, setInheritChecked] = useState(new Set());
   const [inheritTypeFilter, setInheritTypeFilter] = useState(null); // "PO" | "SO" | null
@@ -2808,11 +2838,11 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                     <div style={{ height: 1, background: "#f0eeea", margin: "4px 0" }} />
                     <button onClick={() => { setShowAddMenu(false); setInheritSlider("quote"); setInheritTab("available"); setInheritSearch(""); setInheritChecked(new Set()); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "9px 14px", border: "none", background: "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left" }}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 5a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -14"/><path d="M8 8a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1v1a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1l0 -1"/><path d="M8 14l0 .01"/><path d="M12 14l0 .01"/><path d="M16 14l0 .01"/><path d="M8 17l0 .01"/><path d="M12 17l0 .01"/><path d="M16 17l0 .01"/></svg>
-                      Link from Quote
+                      Quote
                     </button>
                     <button onClick={() => { setShowAddMenu(false); setInheritSlider("po-so"); setInheritTab("available"); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "9px 14px", border: "none", background: "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left" }}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M13 17h-7v-14h-2"/><path d="M6 5l14 1l-.575 4.022m-4.925 2.978h-8.5"/><path d="M21 15h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5"/><path d="M19 21v1m0 -8v1"/></svg>
-                      Link from PO/SO
+                      PO/SO
                     </button>
                     <div style={{ height: 1, background: "#f0eeea", margin: "4px 0" }} />
                     <button className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "9px 14px", border: "none", background: "none", cursor: "not-allowed", fontSize: 13, color: "#b0afa9", textAlign: "left" }}>
@@ -3048,30 +3078,6 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
             </div>
           </div>}
 
-          {/* Compact summary chips: one-glance view of linked Quotes / PO/SOs, click to open Linked tab of the side-sheet */}
-          {!embedded && (linkedQuotes.length > 0 || linkedPos.length > 0) && (
-            <div style={{ margin: "10px 14px 0", display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#6b6a65" }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a3a29c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-              <span style={{ fontWeight: 500, color: "#4a4a46" }}>Linked to job</span>
-              {linkedQuotes.length > 0 && (
-                <button onClick={() => { setInheritSlider("quote"); setInheritTab("linked"); setInheritSearch(""); setInheritChecked(new Set()); }} className="btn-press" style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 12, border: "1px solid #dbeafe", background: "#eff6ff", color: "#1e40af", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 5, ...tn }}>
-                  {linkedQuotes.length} Quote{linkedQuotes.length === 1 ? "" : "s"}
-                </button>
-              )}
-              {linkedPos.length > 0 && (() => {
-                const poCount = linkedPos.filter(p => p.type === "PO").length;
-                const soCount = linkedPos.filter(p => p.type === "SO").length;
-                const label = poCount > 0 && soCount > 0 ? `${poCount} PO · ${soCount} SO` : poCount > 0 ? `${poCount} PO${poCount === 1 ? "" : "s"}` : `${soCount} SO${soCount === 1 ? "" : "s"}`;
-                return (
-                  <button onClick={() => { setInheritSlider("po-so"); setInheritTab("linked"); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null); }} className="btn-press" style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 12, border: "1px solid #fde68a", background: "#fef3c7", color: "#854d0e", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 5, ...tn }}>
-                    {label}
-                  </button>
-                );
-              })()}
-              <span style={{ color: "#c5c4bf" }}>·</span>
-              <button onClick={() => { setInheritSlider(linkedQuotes.length >= linkedPos.length ? "quote" : "po-so"); setInheritTab("linked"); setInheritSearch(""); setInheritChecked(new Set()); }} className="btn-press" style={{ fontSize: 11, fontWeight: 600, padding: 0, background: "none", border: "none", color: "#1a1a18", cursor: "pointer", textDecoration: "underline", textUnderlineOffset: 2 }}>Manage</button>
-            </div>
-          )}
 
           <Table style={{ tableLayout: "fixed", width: "100%" }}>
             <colgroup>
@@ -3403,8 +3409,16 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                                   const srcDocType = p._source === "quote" ? "Quote" : p._source.toUpperCase();
                                   const tip = p._sourceTitle ? `Inherited from ${srcDocType} ${p._sourceId} · ${p._sourceTitle}` : `Inherited from ${srcDocType} ${p._sourceId}`;
                                   const color = p._source === "quote" ? "#1e40af" : p._source === "po" ? "#854d0e" : "#991b1b";
+                                  const openLinked = (e) => {
+                                    e.stopPropagation();
+                                    if (p._source === "quote") {
+                                      setInheritSlider("quote"); setInheritTab("linked"); setInheritSearch(""); setInheritChecked(new Set());
+                                    } else {
+                                      setInheritSlider("po-so"); setInheritTab("linked"); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null);
+                                    }
+                                  };
                                   return (
-                                    <span title={tip} style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", color, cursor: "help" }}>
+                                    <span title={tip} onClick={openLinked} style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", color, cursor: "pointer" }}>
                                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                                     </span>
                                   );
@@ -4092,7 +4106,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
       {/* Quote selection slider — Available + Linked tabs */}
       {inheritSlider === "quote" && createPortal((() => {
         const linkedIds = new Set(linkedQuotes.map(q => q.id));
-        const available = ACCEPTED_QUOTES.filter(q => !linkedIds.has(q.id));
+        const available = ACCEPTED_QUOTES.filter(q => !linkedIds.has(q.id) && (inheritShowOnOtherJobs || !q.attachedJob));
         const sourceList = inheritTab === "linked" ? linkedQuotes : available;
         const filtered = sourceList.filter(q => {
           if (!inheritSearch) return true;
@@ -4151,7 +4165,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
               <div style={{ padding: "0 24px", borderBottom: "1px solid #e8e7e2", background: "#fff", display: "flex", gap: 4 }}>
                 {[
                   { id: "available", label: "Available Quotes", count: available.length },
-                  { id: "linked", label: "Linked to this job", count: linkedQuotes.length },
+                  { id: "linked", label: "Selected Quotes", count: linkedQuotes.length },
                 ].map(t => {
                   const active = inheritTab === t.id;
                   return (
@@ -4164,16 +4178,24 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
               </div>
               {/* Search */}
               <div style={{ padding: "12px 24px", borderBottom: "1px solid #f0eeea", background: "#fafaf8" }}>
-                <div style={{ position: "relative" }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a3a29c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                  <input
-                    type="text"
-                    autoFocus
-                    placeholder="Search by quote number or title..."
-                    value={inheritSearch}
-                    onChange={e => setInheritSearch(e.target.value)}
-                    style={{ width: "100%", fontSize: 13, padding: "8px 10px 8px 32px", borderRadius: 7, border: "1px solid #e0dfda", background: "#fff", outline: "none" }}
-                  />
+                <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                  <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a3a29c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input
+                      type="text"
+                      autoFocus
+                      placeholder="Search by quote number or title..."
+                      value={inheritSearch}
+                      onChange={e => setInheritSearch(e.target.value)}
+                      style={{ width: "100%", fontSize: 13, padding: "8px 10px 8px 32px", borderRadius: 7, border: "1px solid #e0dfda", background: "#fff", outline: "none" }}
+                    />
+                  </div>
+                  {inheritTab === "available" && (
+                    <label title="Include this customer's quotes that are already linked to another job" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "#4a4a46", cursor: "pointer", whiteSpace: "nowrap", padding: "4px 4px" }}>
+                      <input type="checkbox" checked={inheritShowOnOtherJobs} onChange={e => setInheritShowOnOtherJobs(e.target.checked)} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
+                      Show quotes on other jobs
+                    </label>
+                  )}
                 </div>
               </div>
               {/* Table */}
@@ -4209,7 +4231,12 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                             </td>
                             <td style={{ padding: "12px", fontSize: 13, fontWeight: 600, color: "#1a1a18", ...tn }}>{q.id}</td>
                             <td style={{ padding: "12px", fontSize: 13, color: "#1a1a18" }}>
-                              <div style={{ fontWeight: 500 }}>{q.title}</div>
+                              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                                <span style={{ fontWeight: 500 }}>{q.title}</span>
+                                {q.attachedJob && (
+                                  <span title={`Already linked to ${q.attachedJob}`} style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 4, background: "#fef3c7", color: "#854d0e", letterSpacing: "0.02em", ...tn }}>On {q.attachedJob}</span>
+                                )}
+                              </div>
                               <div style={{ fontSize: 11, color: "#a3a29c", marginTop: 2 }}>{q.items.length} line item{q.items.length === 1 ? "" : "s"}</div>
                             </td>
                             <td style={{ padding: "12px", fontSize: 12, color: "#6b6a65", ...tn }}>{q.date}</td>
@@ -4248,7 +4275,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
       {/* PO/SO selection slider — Available + Linked tabs */}
       {inheritSlider === "po-so" && createPortal((() => {
         const linkedIds = new Set(linkedPos.map(p => p.id));
-        const available = SUBMITTED_POS.filter(p => !linkedIds.has(p.id));
+        const available = SUBMITTED_POS.filter(p => !linkedIds.has(p.id) && (inheritShowOnOtherJobs || !p.attachedJob));
         const sourceList = inheritTab === "linked" ? linkedPos : available;
         const filtered = sourceList.filter(p => {
           if (inheritTypeFilter && p.type !== inheritTypeFilter) return false;
@@ -4314,7 +4341,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
               <div style={{ padding: "0 24px", borderBottom: "1px solid #e8e7e2", background: "#fff", display: "flex", gap: 4 }}>
                 {[
                   { id: "available", label: "Available PO/SO's", count: available.length },
-                  { id: "linked", label: "Linked to this job", count: linkedPos.length },
+                  { id: "linked", label: "Selected PO/SO's", count: linkedPos.length },
                 ].map(t => {
                   const active = inheritTab === t.id;
                   return (
@@ -4331,6 +4358,12 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a3a29c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                   <input type="text" autoFocus placeholder="Search by PO/SO number or title..." value={inheritSearch} onChange={e => setInheritSearch(e.target.value)} style={{ width: "100%", fontSize: 13, padding: "8px 10px 8px 32px", borderRadius: 7, border: "1px solid #e0dfda", background: "#fff", outline: "none" }} />
                 </div>
+                {inheritTab === "available" && (
+                  <label title="Include this customer's PO/SOs that are already linked to another job" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "#4a4a46", cursor: "pointer", whiteSpace: "nowrap", padding: "4px 4px" }}>
+                    <input type="checkbox" checked={inheritShowOnOtherJobs} onChange={e => setInheritShowOnOtherJobs(e.target.checked)} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
+                    Show PO/SOs on other jobs
+                  </label>
+                )}
                 {/* Type filter */}
                 <div style={{ position: "relative" }}>
                   <button onClick={() => { setInheritTypeMenuOpen(v => !v); setInheritStatusMenuOpen(false); }} style={{ fontSize: 12, fontWeight: 600, padding: "7px 12px", borderRadius: 7, border: "1px solid #e0dfda", background: inheritTypeFilter ? "#1a1a18" : "#fff", cursor: "pointer", color: inheritTypeFilter ? "#fff" : "#4a4a46", display: "flex", alignItems: "center", gap: 6 }}>
@@ -4403,7 +4436,12 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                               <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 5, background: p.type === "PO" ? "#e0e7ff" : "#fef3c7", color: p.type === "PO" ? "#3730a3" : "#92400e" }}>{p.type}</span>
                             </td>
                             <td style={{ padding: "12px", fontSize: 13, color: "#1a1a18" }}>
-                              <div style={{ fontWeight: 500 }}>{p.title}</div>
+                              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                                <span style={{ fontWeight: 500 }}>{p.title}</span>
+                                {p.attachedJob && (
+                                  <span title={`Already linked to ${p.attachedJob}`} style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 4, background: "#fef3c7", color: "#854d0e", letterSpacing: "0.02em", ...tn }}>On {p.attachedJob}</span>
+                                )}
+                              </div>
                               <div style={{ fontSize: 11, color: "#a3a29c", marginTop: 2 }}>{p.vendor} · {p.items.length} line item{p.items.length === 1 ? "" : "s"}</div>
                             </td>
                             <td style={{ padding: "12px", fontSize: 12, color: "#6b6a65", ...tn }}>{p.date}</td>
