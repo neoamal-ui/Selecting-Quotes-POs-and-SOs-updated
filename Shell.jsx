@@ -3977,9 +3977,8 @@ function QuotesInvoicesTab({ onOpenQuote, onNewQuote }) {
                 <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{q.title}</span>
                 <span style={{ fontSize: 11, color: '#a3a3a3' }}>{q.id}</span>
                 {q._inheritedLink && (
-                  <span title="Linked to this job via Inherit from menu" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 7px', borderRadius: 5, background: '#dbeafe', color: '#1e40af', fontSize: 10, fontWeight: 700, letterSpacing: '0.04em' }}>
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                    Linked
+                  <span title="Linked to this job" style={{ display: 'inline-flex', alignItems: 'center', color: '#1e40af' }}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                   </span>
                 )}
               </div>
