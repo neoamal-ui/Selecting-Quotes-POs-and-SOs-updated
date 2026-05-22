@@ -4255,9 +4255,9 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                 <div style={{ display: "flex", gap: 8 }}>
                   <button onClick={close} style={{ fontSize: 13, fontWeight: 600, padding: "8px 18px", borderRadius: 7, border: "1px solid #e0dfda", background: "#fff", cursor: "pointer", color: "#4a4a46" }}>Cancel</button>
                   {inheritTab === "linked" ? (
-                    <button onClick={handleUnlink} disabled={inheritChecked.size === 0} style={{ fontSize: 13, fontWeight: 700, padding: "8px 22px", borderRadius: 7, border: "none", background: inheritChecked.size > 0 ? "#991b1b" : "#d8d7d2", color: "#fff", cursor: inheritChecked.size > 0 ? "pointer" : "default", transition: "background 120ms ease" }}>Unlink{inheritChecked.size > 0 ? ` (${inheritChecked.size})` : ""}</button>
+                    <button onClick={handleUnlink} disabled={inheritChecked.size === 0} style={{ fontSize: 13, fontWeight: 700, padding: "8px 22px", borderRadius: 7, border: "none", background: inheritChecked.size > 0 ? "#991b1b" : "#d8d7d2", color: "#fff", cursor: inheritChecked.size > 0 ? "pointer" : "default", transition: "background 120ms ease" }}>Remove{inheritChecked.size > 0 ? ` (${inheritChecked.size})` : ""}</button>
                   ) : (
-                    <button onClick={handleAdd} disabled={inheritChecked.size === 0} style={{ fontSize: 13, fontWeight: 700, padding: "8px 22px", borderRadius: 7, border: "none", background: inheritChecked.size > 0 ? "#1a1a18" : "#d8d7d2", color: "#fff", cursor: inheritChecked.size > 0 ? "pointer" : "default", transition: "background 120ms ease" }}>Link Quote{inheritChecked.size > 1 ? "s" : ""}</button>
+                    <button onClick={handleAdd} disabled={inheritChecked.size === 0} style={{ fontSize: 13, fontWeight: 700, padding: "8px 22px", borderRadius: 7, border: "none", background: inheritChecked.size > 0 ? "#1a1a18" : "#d8d7d2", color: "#fff", cursor: inheritChecked.size > 0 ? "pointer" : "default", transition: "background 120ms ease" }}>Add{inheritChecked.size > 0 ? ` (${inheritChecked.size})` : ""}</button>
                   )}
                 </div>
               </div>
@@ -4464,9 +4464,9 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                 <div style={{ display: "flex", gap: 8 }}>
                   <button onClick={close} style={{ fontSize: 13, fontWeight: 600, padding: "8px 18px", borderRadius: 7, border: "1px solid #e0dfda", background: "#fff", cursor: "pointer", color: "#4a4a46" }}>Cancel</button>
                   {inheritTab === "linked" ? (
-                    <button onClick={handleUnlink} disabled={inheritChecked.size === 0} style={{ fontSize: 13, fontWeight: 700, padding: "8px 22px", borderRadius: 7, border: "none", background: inheritChecked.size > 0 ? "#991b1b" : "#d8d7d2", color: "#fff", cursor: inheritChecked.size > 0 ? "pointer" : "default", transition: "background 120ms ease" }}>Unlink{inheritChecked.size > 0 ? ` (${inheritChecked.size})` : ""}</button>
+                    <button onClick={handleUnlink} disabled={inheritChecked.size === 0} style={{ fontSize: 13, fontWeight: 700, padding: "8px 22px", borderRadius: 7, border: "none", background: inheritChecked.size > 0 ? "#991b1b" : "#d8d7d2", color: "#fff", cursor: inheritChecked.size > 0 ? "pointer" : "default", transition: "background 120ms ease" }}>Remove{inheritChecked.size > 0 ? ` (${inheritChecked.size})` : ""}</button>
                   ) : (
-                    <button onClick={handleAdd} disabled={inheritChecked.size === 0} style={{ fontSize: 13, fontWeight: 700, padding: "8px 22px", borderRadius: 7, border: "none", background: inheritChecked.size > 0 ? "#1a1a18" : "#d8d7d2", color: "#fff", cursor: inheritChecked.size > 0 ? "pointer" : "default", transition: "background 120ms ease" }}>Link PO/SO</button>
+                    <button onClick={handleAdd} disabled={inheritChecked.size === 0} style={{ fontSize: 13, fontWeight: 700, padding: "8px 22px", borderRadius: 7, border: "none", background: inheritChecked.size > 0 ? "#1a1a18" : "#d8d7d2", color: "#fff", cursor: inheritChecked.size > 0 ? "pointer" : "default", transition: "background 120ms ease" }}>Add{inheritChecked.size > 0 ? ` (${inheritChecked.size})` : ""}</button>
                   )}
                 </div>
               </div>
