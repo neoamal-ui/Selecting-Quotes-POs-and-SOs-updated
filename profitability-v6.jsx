@@ -3387,7 +3387,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                     const nb = !p.billable;
                     const menuOpen = rowMenu === p.id;
                     const pSerial = String(++_serialCtr).padStart(3, "0");
-                    const sourceLocked = p._source === "quote" || p._source === "po" || p._source === "so";
+                    const sourceLocked = p._source === "po" || p._source === "so";
                     return (
                       <TableRow key={p.id} draggable={!embedded && !sourceLocked} onClick={embedded ? () => setViewItem(p) : undefined} onKeyDown={embedded ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setViewItem(p); } } : undefined} tabIndex={embedded ? 0 : undefined} aria-label={embedded ? `View details for ${p.name}` : undefined} onDragStart={!embedded && !sourceLocked ? () => handleDragStart(p.id) : undefined} onDragOver={!embedded ? (e) => handleDragOver(e, p.id) : undefined} onDrop={!embedded ? () => handleDrop(p.id) : undefined} onDragEnd={!embedded ? () => { setDragItem(null); setDragOverItem(null); } : undefined} data-selected={!embedded && selected.has(p.id) || undefined} style={{ cursor: embedded ? "pointer" : undefined, opacity: dragItem === p.id ? 0.4 : 1, borderTop: dragOverItem === p.id && dragItem !== p.id ? "2px solid #3b82f6" : undefined }}>
                         {!embedded && <TableCell style={{ padding: "0 4px 0 6px", textAlign: "center", verticalAlign: "middle" }}>
