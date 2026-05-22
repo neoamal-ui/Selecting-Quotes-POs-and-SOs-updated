@@ -3406,8 +3406,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                               <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
                                 <span className="hover-link" onClick={(e) => { e.stopPropagation(); setViewItem(p); }} style={{ fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", cursor: "pointer", color: "#1a1a18", minWidth: 0 }}>{p.name}</span>
                                 {p._source && (() => {
-                                  const srcDocType = p._source === "quote" ? "Quote" : p._source.toUpperCase();
-                                  const tip = p._sourceTitle ? `Inherited from ${srcDocType} ${p._sourceId} · ${p._sourceTitle}` : `Inherited from ${srcDocType} ${p._sourceId}`;
+                                  const tip = p._sourceTitle || p._sourceId;
                                   const color = p._source === "quote" ? "#1e40af" : p._source === "po" ? "#854d0e" : "#991b1b";
                                   const openLinked = (e) => {
                                     e.stopPropagation();
