@@ -1980,7 +1980,6 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
   // Inherit-from menu + selection sliders
   const [showInheritMenu, setShowInheritMenu] = useState(false);
   const [inheritSlider, setInheritSlider] = useState(null); // "quote" | "po-so" | null
-  const [inheritTab, setInheritTab] = useState("available"); // "available" | "linked"
   const [inheritShowOnOtherJobs, setInheritShowOnOtherJobs] = useState(false);
   const [inheritSearch, setInheritSearch] = useState("");
   const [inheritChecked, setInheritChecked] = useState(new Set());
@@ -2836,11 +2835,11 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                       Section
                     </button>
                     <div style={{ height: 1, background: "#f0eeea", margin: "4px 0" }} />
-                    <button onClick={() => { setShowAddMenu(false); setInheritSlider("quote"); setInheritTab("available"); setInheritSearch(""); setInheritChecked(new Set()); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "9px 14px", border: "none", background: "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left" }}>
+                    <button onClick={() => { setShowAddMenu(false); setInheritSlider("quote"); setInheritSearch(""); setInheritChecked(new Set()); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "9px 14px", border: "none", background: "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left" }}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 5a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -14"/><path d="M8 8a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1v1a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1l0 -1"/><path d="M8 14l0 .01"/><path d="M12 14l0 .01"/><path d="M16 14l0 .01"/><path d="M8 17l0 .01"/><path d="M12 17l0 .01"/><path d="M16 17l0 .01"/></svg>
                       From Quote
                     </button>
-                    <button onClick={() => { setShowAddMenu(false); setInheritSlider("po-so"); setInheritTab("available"); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "9px 14px", border: "none", background: "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left" }}>
+                    <button onClick={() => { setShowAddMenu(false); setInheritSlider("po-so"); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null); }} className="dropdown-item" style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "9px 14px", border: "none", background: "none", cursor: "pointer", fontSize: 13, color: "#1a1a18", textAlign: "left" }}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8c8b86" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M13 17h-7v-14h-2"/><path d="M6 5l14 1l-.575 4.022m-4.925 2.978h-8.5"/><path d="M21 15h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5"/><path d="M19 21v1m0 -8v1"/></svg>
                       From PO/SO
                     </button>
@@ -3411,9 +3410,9 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                                   const openLinked = (e) => {
                                     e.stopPropagation();
                                     if (p._source === "quote") {
-                                      setInheritSlider("quote"); setInheritTab("linked"); setInheritSearch(""); setInheritChecked(new Set());
+                                      setInheritSlider("quote"); setInheritSearch(""); setInheritChecked(new Set());
                                     } else {
-                                      setInheritSlider("po-so"); setInheritTab("linked"); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null);
+                                      setInheritSlider("po-so"); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null);
                                     }
                                   };
                                   return (
@@ -4102,12 +4101,12 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
         );
       })(), document.body)}
 
-      {/* Quote selection slider — Available + Linked tabs */}
+      {/* Quote selection slider — single list, selected first */}
       {inheritSlider === "quote" && createPortal((() => {
         const linkedIds = new Set(linkedQuotes.map(q => q.id));
         const available = ACCEPTED_QUOTES.filter(q => !linkedIds.has(q.id) && (inheritShowOnOtherJobs || !q.attachedJob));
-        const sourceList = inheritTab === "linked" ? linkedQuotes : available;
-        const filtered = sourceList.filter(q => {
+        const combined = [...linkedQuotes, ...available]; // selected on top
+        const filtered = combined.filter(q => {
           if (!inheritSearch) return true;
           const s = inheritSearch.toLowerCase();
           return q.id.toLowerCase().includes(s) || q.title.toLowerCase().includes(s);
@@ -4115,11 +4114,12 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
         const allFilteredIds = filtered.map(q => q.id);
         const allChecked = allFilteredIds.length > 0 && allFilteredIds.every(id => inheritChecked.has(id));
         const someChecked = allFilteredIds.some(id => inheritChecked.has(id));
-        const close = () => { setInheritSlider(null); setInheritSearch(""); setInheritChecked(new Set()); setInheritTab("available"); };
-        const switchTab = (next) => { if (next === inheritTab) return; setInheritTab(next); setInheritChecked(new Set()); setInheritSearch(""); };
+        const checkedLinked = [...inheritChecked].filter(id => linkedIds.has(id));
+        const checkedAvailable = [...inheritChecked].filter(id => !linkedIds.has(id));
+        const close = () => { setInheritSlider(null); setInheritSearch(""); setInheritChecked(new Set()); };
         const handleAdd = () => {
           const toAdd = available.filter(q => inheritChecked.has(q.id));
-          if (toAdd.length === 0) { close(); return; }
+          if (toAdd.length === 0) return;
           setLinkedQuotes(prev => [...prev, ...toAdd]);
           setParts(prev => {
             const next = [...prev];
@@ -4138,12 +4138,11 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
             return next;
           });
           setToast(`Added ${toAdd.length} quote${toAdd.length > 1 ? "s" : ""} to the job`);
-          close();
+          setInheritChecked(prev => { const n = new Set(prev); toAdd.forEach(q => n.delete(q.id)); return n; });
         };
         const handleUnlink = () => {
-          const ids = [...inheritChecked].filter(id => linkedIds.has(id));
-          if (ids.length === 0) { close(); return; }
-          setRemoveConfirm({ kind: "quote", ids });
+          if (checkedLinked.length === 0) return;
+          setRemoveConfirm({ kind: "quote", ids: checkedLinked });
           setInheritChecked(new Set());
         };
         return (
@@ -4160,21 +4159,6 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
               </div>
-              {/* Tabs */}
-              <div style={{ padding: "0 24px", borderBottom: "1px solid #e8e7e2", background: "#fff", display: "flex", gap: 4 }}>
-                {[
-                  { id: "available", label: "Available Quotes", count: available.length },
-                  { id: "linked", label: "Selected Quotes", count: linkedQuotes.length },
-                ].map(t => {
-                  const active = inheritTab === t.id;
-                  return (
-                    <button key={t.id} onClick={() => switchTab(t.id)} className="btn-press" style={{ fontSize: 13, fontWeight: active ? 700 : 500, color: active ? "#1a1a18" : "#6b6a65", padding: "12px 4px", border: "none", borderBottom: active ? "2px solid #1a1a18" : "2px solid transparent", background: "none", cursor: "pointer", marginRight: 16, display: "inline-flex", alignItems: "center", gap: 6 }}>
-                      {t.label}
-                      <span style={{ fontSize: 11, fontWeight: 700, padding: "1px 7px", borderRadius: 10, background: active ? "#1a1a18" : "#e8e7e2", color: active ? "#fff" : "#6b6a65", ...tn }}>{t.count}</span>
-                    </button>
-                  );
-                })}
-              </div>
               {/* Search */}
               <div style={{ padding: "12px 24px", borderBottom: "1px solid #f0eeea", background: "#fafaf8" }}>
                 <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
@@ -4189,21 +4173,17 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                       style={{ width: "100%", fontSize: 13, padding: "8px 10px 8px 32px", borderRadius: 7, border: "1px solid #e0dfda", background: "#fff", outline: "none" }}
                     />
                   </div>
-                  {inheritTab === "available" && (
-                    <label title="Include this customer's quotes that are already linked to another job" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "#4a4a46", cursor: "pointer", whiteSpace: "nowrap", padding: "4px 4px" }}>
-                      <input type="checkbox" checked={inheritShowOnOtherJobs} onChange={e => setInheritShowOnOtherJobs(e.target.checked)} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
-                      Show all quotes
-                    </label>
-                  )}
+                  <label title="Include this customer's quotes that are already linked to another job" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "#4a4a46", cursor: "pointer", whiteSpace: "nowrap", padding: "4px 4px" }}>
+                    <input type="checkbox" checked={inheritShowOnOtherJobs} onChange={e => setInheritShowOnOtherJobs(e.target.checked)} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
+                    Show all quotes
+                  </label>
                 </div>
               </div>
               {/* Table */}
               <div style={{ flex: 1, overflow: "auto" }}>
                 {filtered.length === 0 ? (
                   <div style={{ padding: 40, textAlign: "center", color: "#8c8b86", fontSize: 13 }}>
-                    {inheritTab === "linked"
-                      ? (linkedQuotes.length === 0 ? "No quotes are linked to this job yet." : "No linked quotes match your search.")
-                      : (available.length === 0 ? "All accepted quotes are already linked to this job." : "No accepted quotes match your search.")}
+                    {combined.length === 0 ? "No quotes available for this customer." : "No quotes match your search."}
                   </div>
                 ) : (
                   <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -4222,15 +4202,21 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                     <tbody>
                       {filtered.map(q => {
                         const checked = inheritChecked.has(q.id);
+                        const isLinked = linkedIds.has(q.id);
                         const toggle = () => setInheritChecked(prev => { const n = new Set(prev); if (n.has(q.id)) n.delete(q.id); else n.add(q.id); return n; });
                         return (
-                          <tr key={q.id} onClick={toggle} className="picker-row" style={{ cursor: "pointer", borderBottom: "1px solid #f0eeea", background: checked ? "#fafaf8" : "transparent" }}>
-                            <td style={{ padding: "12px 12px 12px 24px" }}>
+                          <tr key={q.id} onClick={toggle} className="picker-row" style={{ cursor: "pointer", borderBottom: "1px solid #f0eeea", background: checked ? "#fafaf8" : "transparent", borderLeft: isLinked ? "3px solid #1e40af" : "3px solid transparent" }}>
+                            <td style={{ padding: "12px 12px 12px 21px" }}>
                               <input type="checkbox" checked={checked} onChange={toggle} onClick={e => e.stopPropagation()} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
                             </td>
                             <td style={{ padding: "12px", fontSize: 13, fontWeight: 600, color: "#1a1a18", ...tn }}>{q.id}</td>
                             <td style={{ padding: "12px", fontSize: 13, color: "#1a1a18" }}>
-                              <div style={{ fontWeight: 500 }}>{q.title}</div>
+                              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                                <span style={{ fontWeight: 500 }}>{q.title}</span>
+                                {isLinked && (
+                                  <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 4, background: "#dbeafe", color: "#1e40af", letterSpacing: "0.02em", ...tn }}>Selected</span>
+                                )}
+                              </div>
                               <div style={{ fontSize: 11, color: "#a3a29c", marginTop: 2 }}>{q.items.length} line item{q.items.length === 1 ? "" : "s"}</div>
                             </td>
                             <td style={{ padding: "12px", fontSize: 12, color: "#6b6a65", ...tn }}>{q.date}</td>
@@ -4248,17 +4234,17 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
               {/* Footer */}
               <div style={{ padding: "14px 24px", borderTop: "1px solid #e8e7e2", background: "#fafaf8", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
                 <span style={{ fontSize: 12, color: "#8c8b86" }}>
-                  {inheritChecked.size > 0
-                    ? `${inheritChecked.size} quote${inheritChecked.size > 1 ? "s" : ""} selected`
-                    : (inheritTab === "linked" ? "Select linked quotes to unlink" : "Select accepted quotes to add")}
+                  {inheritChecked.size === 0 && "Select quotes to link or already-linked quotes to unlink"}
+                  {checkedAvailable.length > 0 && `${checkedAvailable.length} to link`}
+                  {checkedAvailable.length > 0 && checkedLinked.length > 0 && " · "}
+                  {checkedLinked.length > 0 && `${checkedLinked.length} to unlink`}
                 </span>
                 <div style={{ display: "flex", gap: 8 }}>
                   <button onClick={close} style={{ fontSize: 13, fontWeight: 600, padding: "8px 18px", borderRadius: 7, border: "1px solid #e0dfda", background: "#fff", cursor: "pointer", color: "#4a4a46" }}>Cancel</button>
-                  {inheritTab === "linked" ? (
-                    <button onClick={handleUnlink} disabled={inheritChecked.size === 0} style={{ fontSize: 13, fontWeight: 700, padding: "8px 22px", borderRadius: 7, border: "none", background: inheritChecked.size > 0 ? "#991b1b" : "#d8d7d2", color: "#fff", cursor: inheritChecked.size > 0 ? "pointer" : "default", transition: "background 120ms ease" }}>Unlink{inheritChecked.size > 0 ? ` (${inheritChecked.size})` : ""}</button>
-                  ) : (
-                    <button onClick={handleAdd} disabled={inheritChecked.size === 0} style={{ fontSize: 13, fontWeight: 700, padding: "8px 22px", borderRadius: 7, border: "none", background: inheritChecked.size > 0 ? "#1a1a18" : "#d8d7d2", color: "#fff", cursor: inheritChecked.size > 0 ? "pointer" : "default", transition: "background 120ms ease" }}>Link Quote{inheritChecked.size > 1 ? "s" : ""}</button>
+                  {checkedLinked.length > 0 && (
+                    <button onClick={handleUnlink} style={{ fontSize: 13, fontWeight: 700, padding: "8px 18px", borderRadius: 7, border: "1px solid #fecaca", background: "#fff", color: "#991b1b", cursor: "pointer" }}>Unlink ({checkedLinked.length})</button>
                   )}
+                  <button onClick={handleAdd} disabled={checkedAvailable.length === 0} style={{ fontSize: 13, fontWeight: 700, padding: "8px 22px", borderRadius: 7, border: "none", background: checkedAvailable.length > 0 ? "#1a1a18" : "#d8d7d2", color: "#fff", cursor: checkedAvailable.length > 0 ? "pointer" : "default", transition: "background 120ms ease" }}>Link{checkedAvailable.length > 0 ? ` (${checkedAvailable.length})` : ""}</button>
                 </div>
               </div>
             </div>
@@ -4266,12 +4252,12 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
         );
       })(), document.body)}
 
-      {/* PO/SO selection slider — Available + Linked tabs */}
+      {/* PO/SO selection slider — single list, selected first */}
       {inheritSlider === "po-so" && createPortal((() => {
         const linkedIds = new Set(linkedPos.map(p => p.id));
         const available = SUBMITTED_POS.filter(p => !linkedIds.has(p.id) && (inheritShowOnOtherJobs || !p.attachedJob));
-        const sourceList = inheritTab === "linked" ? linkedPos : available;
-        const filtered = sourceList.filter(p => {
+        const combined = [...linkedPos, ...available]; // selected on top
+        const filtered = combined.filter(p => {
           if (inheritTypeFilter && p.type !== inheritTypeFilter) return false;
           if (inheritStatusFilter && p.status !== inheritStatusFilter) return false;
           if (!inheritSearch) return true;
@@ -4281,17 +4267,17 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
         const allFilteredIds = filtered.map(p => p.id);
         const allChecked = allFilteredIds.length > 0 && allFilteredIds.every(id => inheritChecked.has(id));
         const someChecked = allFilteredIds.some(id => inheritChecked.has(id));
-        const close = () => { setInheritSlider(null); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null); setInheritTypeMenuOpen(false); setInheritStatusMenuOpen(false); setInheritTab("available"); };
-        const switchTab = (next) => { if (next === inheritTab) return; setInheritTab(next); setInheritChecked(new Set()); setInheritSearch(""); setInheritTypeFilter(null); setInheritStatusFilter(null); };
+        const checkedLinked = [...inheritChecked].filter(id => linkedIds.has(id));
+        const checkedAvailable = [...inheritChecked].filter(id => !linkedIds.has(id));
+        const close = () => { setInheritSlider(null); setInheritSearch(""); setInheritChecked(new Set()); setInheritTypeFilter(null); setInheritStatusFilter(null); setInheritTypeMenuOpen(false); setInheritStatusMenuOpen(false); };
         const handleUnlink = () => {
-          const ids = [...inheritChecked].filter(id => linkedIds.has(id));
-          if (ids.length === 0) { close(); return; }
-          setRemoveConfirm({ kind: "po", ids });
+          if (checkedLinked.length === 0) return;
+          setRemoveConfirm({ kind: "po", ids: checkedLinked });
           setInheritChecked(new Set());
         };
         const handleAdd = () => {
           const toAdd = available.filter(p => inheritChecked.has(p.id));
-          if (toAdd.length === 0) { close(); return; }
+          if (toAdd.length === 0) return;
           setLinkedPos(prev => [...prev, ...toAdd]);
           setParts(prev => {
             const next = [...prev];
@@ -4315,7 +4301,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
             : hasPO ? "Parts master and vendor price list updated with received cost"
             : "Services master updated with received cost";
           setToast(`Added ${toAdd.length} document${toAdd.length > 1 ? "s" : ""} — ${masterMsg}`);
-          close();
+          setInheritChecked(prev => { const n = new Set(prev); toAdd.forEach(p => n.delete(p.id)); return n; });
         };
         return (
           <>
@@ -4331,33 +4317,16 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
               </div>
-              {/* Tabs */}
-              <div style={{ padding: "0 24px", borderBottom: "1px solid #e8e7e2", background: "#fff", display: "flex", gap: 4 }}>
-                {[
-                  { id: "available", label: "Available PO/SO's", count: available.length },
-                  { id: "linked", label: "Selected PO/SO's", count: linkedPos.length },
-                ].map(t => {
-                  const active = inheritTab === t.id;
-                  return (
-                    <button key={t.id} onClick={() => switchTab(t.id)} className="btn-press" style={{ fontSize: 13, fontWeight: active ? 700 : 500, color: active ? "#1a1a18" : "#6b6a65", padding: "12px 4px", border: "none", borderBottom: active ? "2px solid #1a1a18" : "2px solid transparent", background: "none", cursor: "pointer", marginRight: 16, display: "inline-flex", alignItems: "center", gap: 6 }}>
-                      {t.label}
-                      <span style={{ fontSize: 11, fontWeight: 700, padding: "1px 7px", borderRadius: 10, background: active ? "#1a1a18" : "#e8e7e2", color: active ? "#fff" : "#6b6a65", ...tn }}>{t.count}</span>
-                    </button>
-                  );
-                })}
-              </div>
               {/* Search + filters */}
               <div style={{ padding: "12px 24px", borderBottom: "1px solid #f0eeea", background: "#fafaf8", display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
                 <div style={{ position: "relative", flex: 1, minWidth: 240 }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a3a29c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                   <input type="text" autoFocus placeholder="Search by PO/SO number or title..." value={inheritSearch} onChange={e => setInheritSearch(e.target.value)} style={{ width: "100%", fontSize: 13, padding: "8px 10px 8px 32px", borderRadius: 7, border: "1px solid #e0dfda", background: "#fff", outline: "none" }} />
                 </div>
-                {inheritTab === "available" && (
-                  <label title="Include this customer's PO/SOs that are already linked to another job" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "#4a4a46", cursor: "pointer", whiteSpace: "nowrap", padding: "4px 4px" }}>
-                    <input type="checkbox" checked={inheritShowOnOtherJobs} onChange={e => setInheritShowOnOtherJobs(e.target.checked)} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
-                    Show all PO/SO
-                  </label>
-                )}
+                <label title="Include this customer's PO/SOs that are already linked to another job" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "#4a4a46", cursor: "pointer", whiteSpace: "nowrap", padding: "4px 4px" }}>
+                  <input type="checkbox" checked={inheritShowOnOtherJobs} onChange={e => setInheritShowOnOtherJobs(e.target.checked)} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
+                  Show all PO/SO
+                </label>
                 {/* Type filter */}
                 <div style={{ position: "relative" }}>
                   <button onClick={() => { setInheritTypeMenuOpen(v => !v); setInheritStatusMenuOpen(false); }} style={{ fontSize: 12, fontWeight: 600, padding: "7px 12px", borderRadius: 7, border: "1px solid #e0dfda", background: inheritTypeFilter ? "#1a1a18" : "#fff", cursor: "pointer", color: inheritTypeFilter ? "#fff" : "#4a4a46", display: "flex", alignItems: "center", gap: 6 }}>
@@ -4397,9 +4366,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
               <div style={{ flex: 1, overflow: "auto" }}>
                 {filtered.length === 0 ? (
                   <div style={{ padding: 40, textAlign: "center", color: "#8c8b86", fontSize: 13 }}>
-                    {inheritTab === "linked"
-                      ? (linkedPos.length === 0 ? "No POs/SOs are linked to this job yet." : "No linked PO/SO matches your filters.")
-                      : (available.length === 0 ? "All POs/SOs are already linked to this job." : "No PO/SO matches your filters.")}
+                    {combined.length === 0 ? "No POs/SOs available for this customer." : "No PO/SO matches your filters."}
                   </div>
                 ) : (
                   <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -4419,10 +4386,12 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                     <tbody>
                       {filtered.map(p => {
                         const checked = inheritChecked.has(p.id);
+                        const isLinked = linkedIds.has(p.id);
+                        const accent = p.type === "PO" ? "#854d0e" : "#991b1b";
                         const toggle = () => setInheritChecked(prev => { const n = new Set(prev); if (n.has(p.id)) n.delete(p.id); else n.add(p.id); return n; });
                         return (
-                          <tr key={p.id} onClick={toggle} className="picker-row" style={{ cursor: "pointer", borderBottom: "1px solid #f0eeea", background: checked ? "#fafaf8" : "transparent" }}>
-                            <td style={{ padding: "12px 12px 12px 24px" }}>
+                          <tr key={p.id} onClick={toggle} className="picker-row" style={{ cursor: "pointer", borderBottom: "1px solid #f0eeea", background: checked ? "#fafaf8" : "transparent", borderLeft: isLinked ? `3px solid ${accent}` : "3px solid transparent" }}>
+                            <td style={{ padding: "12px 12px 12px 21px" }}>
                               <input type="checkbox" checked={checked} onChange={toggle} onClick={e => e.stopPropagation()} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
                             </td>
                             <td style={{ padding: "12px", fontSize: 13, fontWeight: 600, color: "#1a1a18", ...tn }}>{p.id}</td>
@@ -4430,7 +4399,12 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                               <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 5, background: p.type === "PO" ? "#e0e7ff" : "#fef3c7", color: p.type === "PO" ? "#3730a3" : "#92400e" }}>{p.type}</span>
                             </td>
                             <td style={{ padding: "12px", fontSize: 13, color: "#1a1a18" }}>
-                              <div style={{ fontWeight: 500 }}>{p.title}</div>
+                              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                                <span style={{ fontWeight: 500 }}>{p.title}</span>
+                                {isLinked && (
+                                  <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 4, background: p.type === "PO" ? "#fef3c7" : "#fee2e2", color: accent, letterSpacing: "0.02em", ...tn }}>Selected</span>
+                                )}
+                              </div>
                               <div style={{ fontSize: 11, color: "#a3a29c", marginTop: 2 }}>{p.vendor} · {p.items.length} line item{p.items.length === 1 ? "" : "s"}</div>
                             </td>
                             <td style={{ padding: "12px", fontSize: 12, color: "#6b6a65", ...tn }}>{p.date}</td>
@@ -4457,17 +4431,17 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
               {/* Footer */}
               <div style={{ padding: "14px 24px", borderTop: "1px solid #e8e7e2", background: "#fafaf8", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
                 <span style={{ fontSize: 12, color: "#8c8b86" }}>
-                  {inheritChecked.size > 0
-                    ? `${inheritChecked.size} document${inheritChecked.size > 1 ? "s" : ""} selected`
-                    : (inheritTab === "linked" ? "Select linked PO/SO to unlink" : "Select PO/SO to add")}
+                  {inheritChecked.size === 0 && "Select PO/SO to link or already-linked ones to unlink"}
+                  {checkedAvailable.length > 0 && `${checkedAvailable.length} to link`}
+                  {checkedAvailable.length > 0 && checkedLinked.length > 0 && " · "}
+                  {checkedLinked.length > 0 && `${checkedLinked.length} to unlink`}
                 </span>
                 <div style={{ display: "flex", gap: 8 }}>
                   <button onClick={close} style={{ fontSize: 13, fontWeight: 600, padding: "8px 18px", borderRadius: 7, border: "1px solid #e0dfda", background: "#fff", cursor: "pointer", color: "#4a4a46" }}>Cancel</button>
-                  {inheritTab === "linked" ? (
-                    <button onClick={handleUnlink} disabled={inheritChecked.size === 0} style={{ fontSize: 13, fontWeight: 700, padding: "8px 22px", borderRadius: 7, border: "none", background: inheritChecked.size > 0 ? "#991b1b" : "#d8d7d2", color: "#fff", cursor: inheritChecked.size > 0 ? "pointer" : "default", transition: "background 120ms ease" }}>Unlink{inheritChecked.size > 0 ? ` (${inheritChecked.size})` : ""}</button>
-                  ) : (
-                    <button onClick={handleAdd} disabled={inheritChecked.size === 0} style={{ fontSize: 13, fontWeight: 700, padding: "8px 22px", borderRadius: 7, border: "none", background: inheritChecked.size > 0 ? "#1a1a18" : "#d8d7d2", color: "#fff", cursor: inheritChecked.size > 0 ? "pointer" : "default", transition: "background 120ms ease" }}>Link PO/SO</button>
+                  {checkedLinked.length > 0 && (
+                    <button onClick={handleUnlink} style={{ fontSize: 13, fontWeight: 700, padding: "8px 18px", borderRadius: 7, border: "1px solid #fecaca", background: "#fff", color: "#991b1b", cursor: "pointer" }}>Unlink ({checkedLinked.length})</button>
                   )}
+                  <button onClick={handleAdd} disabled={checkedAvailable.length === 0} style={{ fontSize: 13, fontWeight: 700, padding: "8px 22px", borderRadius: 7, border: "none", background: checkedAvailable.length > 0 ? "#1a1a18" : "#d8d7d2", color: "#fff", cursor: checkedAvailable.length > 0 ? "pointer" : "default", transition: "background 120ms ease" }}>Link{checkedAvailable.length > 0 ? ` (${checkedAvailable.length})` : ""}</button>
                 </div>
               </div>
             </div>
