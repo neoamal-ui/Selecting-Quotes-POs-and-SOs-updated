@@ -1981,7 +1981,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
   const [showInheritMenu, setShowInheritMenu] = useState(false);
   const [inheritSlider, setInheritSlider] = useState(null); // "quote" | "po-so" | null
   const [inheritTab, setInheritTab] = useState("available"); // "available" | "linked"
-  const [inheritShowOnOtherJobs, setInheritShowOnOtherJobs] = useState(false);
+  const [inheritRelatedOnly, setInheritRelatedOnly] = useState(false);
   const [inheritSearch, setInheritSearch] = useState("");
   const [inheritChecked, setInheritChecked] = useState(new Set());
   const [inheritTypeFilter, setInheritTypeFilter] = useState(null); // "PO" | "SO" | null
@@ -4105,7 +4105,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
       {/* Quote selection slider — Available + Linked tabs */}
       {inheritSlider === "quote" && createPortal((() => {
         const linkedIds = new Set(linkedQuotes.map(q => q.id));
-        const available = ACCEPTED_QUOTES.filter(q => !linkedIds.has(q.id) && (inheritShowOnOtherJobs || !q.attachedJob));
+        const available = ACCEPTED_QUOTES.filter(q => !linkedIds.has(q.id) && (!inheritRelatedOnly || !q.attachedJob));
         const sourceList = inheritTab === "linked" ? linkedQuotes : available;
         const filtered = sourceList.filter(q => {
           if (!inheritSearch) return true;
@@ -4190,9 +4190,9 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                     />
                   </div>
                   {inheritTab === "available" && (
-                    <label title="Include this customer's quotes that are already linked to another job" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "#4a4a46", cursor: "pointer", whiteSpace: "nowrap", padding: "4px 4px" }}>
-                      <input type="checkbox" checked={inheritShowOnOtherJobs} onChange={e => setInheritShowOnOtherJobs(e.target.checked)} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
-                      Show all quotes
+                    <label title="Accepted quotes of the customer not linked to any other jobs" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "#4a4a46", cursor: "pointer", whiteSpace: "nowrap", padding: "4px 4px" }}>
+                      <input type="checkbox" checked={inheritRelatedOnly} onChange={e => setInheritRelatedOnly(e.target.checked)} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
+                      Related quotes
                     </label>
                   )}
                 </div>
@@ -4269,7 +4269,7 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
       {/* PO/SO selection slider — Available + Linked tabs */}
       {inheritSlider === "po-so" && createPortal((() => {
         const linkedIds = new Set(linkedPos.map(p => p.id));
-        const available = SUBMITTED_POS.filter(p => !linkedIds.has(p.id) && (inheritShowOnOtherJobs || !p.attachedJob));
+        const available = SUBMITTED_POS.filter(p => !linkedIds.has(p.id));
         const sourceList = inheritTab === "linked" ? linkedPos : available;
         const filtered = sourceList.filter(p => {
           if (inheritTypeFilter && p.type !== inheritTypeFilter) return false;
@@ -4352,12 +4352,6 @@ export default function App({ embedded = false, pendingColorItems = null, embedd
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a3a29c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                   <input type="text" autoFocus placeholder="Search by PO/SO number or title..." value={inheritSearch} onChange={e => setInheritSearch(e.target.value)} style={{ width: "100%", fontSize: 13, padding: "8px 10px 8px 32px", borderRadius: 7, border: "1px solid #e0dfda", background: "#fff", outline: "none" }} />
                 </div>
-                {inheritTab === "available" && (
-                  <label title="Include this customer's PO/SOs that are already linked to another job" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "#4a4a46", cursor: "pointer", whiteSpace: "nowrap", padding: "4px 4px" }}>
-                    <input type="checkbox" checked={inheritShowOnOtherJobs} onChange={e => setInheritShowOnOtherJobs(e.target.checked)} style={{ width: 13, height: 13, cursor: "pointer", accentColor: "#1a1a18" }} />
-                    Show all PO/SO
-                  </label>
-                )}
                 {/* Type filter */}
                 <div style={{ position: "relative" }}>
                   <button onClick={() => { setInheritTypeMenuOpen(v => !v); setInheritStatusMenuOpen(false); }} style={{ fontSize: 12, fontWeight: 600, padding: "7px 12px", borderRadius: 7, border: "1px solid #e0dfda", background: inheritTypeFilter ? "#1a1a18" : "#fff", cursor: "pointer", color: inheritTypeFilter ? "#fff" : "#4a4a46", display: "flex", alignItems: "center", gap: 6 }}>
